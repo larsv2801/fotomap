@@ -22,6 +22,7 @@
             overflow:hidden;
             background-color: #222222;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            transition: 2s;
         }
 
         #map{
@@ -926,6 +927,67 @@
             outline:none;
             color:white;
         }
+
+
+        #profile{
+            width:100dvw;
+            height:100dvh;
+            display:none;
+            z-index:1;
+            background-color: #242424;
+            position:relative;
+            top:0;
+            left:0;
+            padding:0;
+            margin:0;
+        }
+
+        #deleteverything{
+            width:65dvw;
+            height:15dvh;
+            position:fixed;
+            left:50%;
+            top:50%;
+            transform: translate(-50%,-50%);
+            color:white;
+            background-color: rgb(209, 0, 0);
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius:15px;
+            border:solid white 4px;
+            box-shadow: 0px 0px 30px rgba(255, 0, 0, 0.462);
+            display:flex;
+            transform-style: preserve-3d;
+            z-index:1;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #deleteverything::before{
+            content:"";
+            width:65dvw;
+            height:15dvh;
+            border-radius:15px;
+            background:linear-gradient(45deg,red,white,red);
+            animation: gloweffect 20s linear infinite;
+            transition: .3s ease-in-out;
+            filter:blur(15px);
+            transform: scale(1.05);
+            opacity:1;
+            position:absolute;
+            top: -5px; left: -5px; right: -5px; bottom: -5px;
+            display:flex;
+            z-index:-1;
+            /*transform: translateZ(-1px);*/
+            background-size: 400%;
+        }
+
+        @keyframes gloweffect{
+            0% {background-position: 0 0;}
+            50% {background-position: 400% 0;}
+            100% {background-position: 0 0;}
+        }
+
     </style>
 </head>
 <body>
@@ -991,7 +1053,10 @@
         <button onclick="trips()"><svg id="svgplane" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M552 264C582.9 264 608 289.1 608 320C608 350.9 582.9 376 552 376L424.7 376L265.5 549.6C259.4 556.2 250.9 560 241.9 560L198.2 560C187.3 560 179.6 549.3 183 538.9L237.3 376L137.6 376L84.8 442C81.8 445.8 77.2 448 72.3 448L52.5 448C42.1 448 34.5 438.2 37 428.1L64 320L37 211.9C34.4 201.8 42.1 192 52.5 192L72.3 192C77.2 192 81.8 194.2 84.8 198L137.6 264L237.3 264L183 101.1C179.6 90.7 187.3 80 198.2 80L241.9 80C250.9 80 259.4 83.8 265.5 90.4L424.7 264L552 264z"/></svg></button>
         <button onclick="closeadd()"><svg id="svgplus" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M352 128C352 110.3 337.7 96 320 96C302.3 96 288 110.3 288 128L288 288L128 288C110.3 288 96 302.3 96 320C96 337.7 110.3 352 128 352L288 352L288 512C288 529.7 302.3 544 320 544C337.7 544 352 529.7 352 512L352 352L512 352C529.7 352 544 337.7 544 320C544 302.3 529.7 288 512 288L352 288L352 128z"/></svg></button>
         <button onclick="gallery()"><svg id="svgimg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M160 96C124.7 96 96 124.7 96 160L96 480C96 515.3 124.7 544 160 544L480 544C515.3 544 544 515.3 544 480L544 160C544 124.7 515.3 96 480 96L160 96zM224 176C250.5 176 272 197.5 272 224C272 250.5 250.5 272 224 272C197.5 272 176 250.5 176 224C176 197.5 197.5 176 224 176zM368 288C376.4 288 384.1 292.4 388.5 299.5L476.5 443.5C481 450.9 481.2 460.2 477 467.8C472.8 475.4 464.7 480 456 480L184 480C175.1 480 166.8 475 162.7 467.1C158.6 459.2 159.2 449.6 164.3 442.3L220.3 362.3C224.8 355.9 232.1 352.1 240 352.1C247.9 352.1 255.2 355.9 259.7 362.3L286.1 400.1L347.5 299.6C351.9 292.5 359.6 288.1 368 288.1z"/></svg></button>
-        <button><svg id="svgprofile" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M463 448.2C440.9 409.8 399.4 384 352 384L288 384C240.6 384 199.1 409.8 177 448.2C212.2 487.4 263.2 512 320 512C376.8 512 427.8 487.3 463 448.2zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 336C359.8 336 392 303.8 392 264C392 224.2 359.8 192 320 192C280.2 192 248 224.2 248 264C248 303.8 280.2 336 320 336z"/></svg></button>
+        <button onclick="openprofile()"><svg id="svgprofile" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M463 448.2C440.9 409.8 399.4 384 352 384L288 384C240.6 384 199.1 409.8 177 448.2C212.2 487.4 263.2 512 320 512C376.8 512 427.8 487.3 463 448.2zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 336C359.8 336 392 303.8 392 264C392 224.2 359.8 192 320 192C280.2 192 248 224.2 248 264C248 303.8 280.2 336 320 336z"/></svg></button>
+    </div>
+    <div id="profile">
+        <button id="deleteverything" onclick="deleteverything()">DELETE EVERYTHING</button>
     </div>
     <div id="map"></div>
 
@@ -1221,6 +1286,7 @@ function closeadd() {
         document.getElementById("tripviewer").classList.remove("active");
         document.getElementById("map").style.display = "flex";
         document.getElementById("navpill").style.display = "flex";
+        document.getElementById("profile").style.display = "none";
         /*document.getElementById("gallery").style.display = "none";*/
     }
 
@@ -1230,6 +1296,7 @@ function home(){
         document.getElementById('add').style.display = 'none';
         document.getElementById('gallery').style.display = 'none';
         document.getElementById('trips').style.display = 'none';
+        document.getElementById("profile").style.display = "none";
         addzichtbaar = 0;
         document.getElementById("svgplus").style.fill = "white";
         document.getElementById("svghome").style.fill = "goldenrod";
@@ -1314,6 +1381,7 @@ function gallery(){
     document.getElementById("add").style.display = "none";
     document.getElementById("imagepopup").style.display = "none";
     document.getElementById("fullimagepopup").classList.remove("active");
+    document.getElementById("profile").style.display = "none";
 
     document.getElementById("svgplus").style.fill = "white";
     document.getElementById("svghome").style.fill = "white";
@@ -1328,6 +1396,7 @@ function trips(){
     document.getElementById("add").style.display = "none";
     document.getElementById("imagepopup").style.display = "none";
     document.getElementById("fullimagepopup").classList.remove("active");
+    document.getElementById("profile").style.display = "none";
 
     document.getElementById("svgplus").style.fill = "white";
     document.getElementById("svghome").style.fill = "white";
@@ -1379,6 +1448,7 @@ function viewonmap(hvl) {
     document.getElementById("fullimagepopup").classList.remove("active");
     document.getElementById("gallery").style.display = "none";
     document.getElementById("map").style.display = "flex";
+    document.getElementById("profile").style.display = "none";
 
     document.getElementById("svgplus").style.fill = "white";
     document.getElementById("svghome").style.fill = "goldenrod";
@@ -1399,6 +1469,7 @@ function gettripimages(wtrip){
     document.getElementById("gallery").style.display = "none";
     document.getElementById("trips").style.display = "none";
     document.getElementById("map").style.display = "flex";
+    document.getElementById("profile").style.display = "none";
 
     document.getElementById("svgplus").style.fill = "white";
     document.getElementById("svghome").style.fill = "goldenrod";
@@ -1555,6 +1626,7 @@ function closetrip() {
     document.getElementById("tripviewer").classList.remove("active");
     document.getElementById("map").style.display = "flex";
     document.getElementById("navpill").style.display = "flex";
+    document.getElementById("profile").style.display = "none";
 
     document.getElementById("svgplus").style.fill = "white";
     document.getElementById("svghome").style.fill = "goldenrod";
@@ -1683,6 +1755,38 @@ async function deleteimage(hvl){
         await localforage.setItem('my_markers', loadedmarkers);
 
         location.reload();
+    }
+}
+
+function openprofile(){
+    document.getElementById("profile").style.display = "flex";
+    document.getElementById("fullimagepopup").classList.remove("active");
+    document.getElementById("gallery").style.display = "none";
+    document.getElementById("trips").style.display = "none";
+    document.getElementById("tripviewer").classList.remove("active");
+    document.getElementById("navpill").style.display = "flex";
+
+    document.getElementById("svgplus").style.fill = "white";
+    document.getElementById("svghome").style.fill = "white";
+    document.getElementById("svgplane").style.fill = "white";
+    document.getElementById("svgimg").style.fill = "white";
+    document.getElementById("svgprofile").style.fill = "goldenrod"; 
+}
+
+function deleteverything() {
+    if(confirm("Are you sure? \nyou are goint to delete everything.")){
+        if(confirm("Are you REALLY sure?")){
+            if(confirm("LAST CHANCE, YOU ARE GOING TO DELETE EVERYTHING!")){
+                document.getElementById("deleteverything").innerHTML = "DELETING EVERYTHING...";
+                document.getElementById("deleteverything").style.pointerEvents = "none";
+                setTimeout(function () {
+                        localforage.clear();
+                        document.body.innerHTML = "";
+                        document.body.style.backgroundColor = "white";
+                        setTimeout(() => location.reload(), 10000);
+                }, 1000);
+            }
+        }
     }
 }
     </script>
