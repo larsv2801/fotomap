@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
+     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
+     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster-src.js"></script>
+     <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fotomap</title>
+    <style>
+        body{
+            margin:0;
+            padding:0;
+            overflow:hidden;
+            background-color: #222222;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        #map{
+            width:100dvw;
+            height:100dvh;
+            display:flex;
+            z-index:1;
+            background-color: #242424;
+        }
+        .add{
+            width:95dvw;
+            height:84.5dvh;
+            position: fixed;
+            left:50%;
+            top:1%;
+            transform: translate(-50%, 0%);
+            display:none;
+            flex-direction:column;
+            z-index:10;
+            align-items:center;
+            color:white;
+            padding-top:5dvh;
+            background: rgba(46, 46, 46, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 25px;
+            gap: 11px;
+        }
+
+        .add input[type="number"]:focus {
+            border: 1px solid goldenrod;
+            outline:none;
+        }
+
+        .add input[type="number"] {
+          width: 81dvw;
+          height: 5dvh;
+          border-radius: 12px;
+          outline:none;
+          border: 1px solid transparent;
+          transition: 0.2s;
+          padding-left:2dvw;
+          padding-right:2dvw;
+        }
+
+        .add input[type="text"] {
+          width: 81dvw;
+          height: 5dvh;
+          border-radius: 12px;
+          outline:none;
+          border: 1px solid transparent;
+          transition: 0.2s;
+          padding-left:2dvw;
+          padding-right:2dvw;
+        }
+
+        .add input[type="text"]:focus {
+            border: 1px solid goldenrod;
+            outline:none;
+        }
+
+        .add select {
+          margin:0;
+          width: 85dvw;
+          height: 5dvh;
+          border-radius: 12px;
+          outline:none;
+          border: 1px solid transparent;
+          transition: 0.2s;
+        }
+
+        .add select:focus {
+            border: 1px solid goldenrod;
+            outline:none;
+        }
+
+        .add option {
+          width: 81dvw;
+          height: 5dvh;
+          border-radius: 12px;
+          outline:none;
+          border: 1px solid transparent;
+          transition: 0.2s;
+          padding-left:2dvw;
+          padding-right:2dvw;
+        }
+
+        .add optien:focus {
+            border: 1px solid goldenrod;
+            outline:none;
+        }
+
+        .add textarea {
+          width: 81dvw;
+          height: 8dvh;
+          border-radius: 12px;
+          outline:none;
+          border: 1px solid transparent;
+          transition: 0.2s;
+          padding-left:2dvw;
+          padding-right:2dvw;
+          resize:none;
+        }
+
+        .add textarea:focus {
+            border: 1px solid goldenrod;
+            outline:none;
+        }
+
+        .add input[type="file"]{
+          display:none;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            /* display: none; <- Crashes Chrome on hover */
+            -webkit-appearance: none;
+            margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+        }
+
+        input[type="date"]{
+          width: 81dvw;
+          height: 5dvh;
+          border-radius: 12px;
+          outline:none;
+          border: 1px solid transparent;
+          transition: 0.2s;
+          padding-left:2dvw;
+          padding-right:2dvw;
+        }
+
+        .add input[type="date"]:focus {
+            border: 1px solid goldenrod;
+            outline:none;
+        }
+
+        /*input[type=number] {
+            -moz-appearance:textfield; /* Firefox 
+        }*/
+
+            #urlinput {
+                width: 85dvw;
+                color: #ccc;
+                font-size: 14px;
+            }
+
+        #tripurlinput {
+                width: 85dvw;
+                color: #ccc;
+                font-size: 14px;
+        }
+
+        #locafinder {
+            background: none;
+            border: 1px solid goldenrod;
+            color: goldenrod;
+            width: 85dvw;
+            height: 5dvh;
+            border-radius: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        #locafinder:active {
+            background: rgba(218, 165, 32, 0.2);
+            transform: scale(0.98);
+        }
+
+        #locachooser {
+            background: none;
+            border: 1px solid goldenrod;
+            color: goldenrod;
+            width: 85dvw;
+            height: 5dvh;
+            border-radius: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        #locachooser:active {
+            background: rgba(218, 165, 32, 0.2);
+            transform: scale(0.98);
+        }
+
+        #urlbutton {
+            border:none;
+            outline:none;
+            background-color: white;
+            color: goldenrod;
+            width: 85dvw;
+            height: 5dvh;
+            border-radius: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+            transition: all 0.3s;
+            /*margin-bottom:5dvh;*/
+        }
+
+        #tripurlbutton {
+            border:none;
+            outline:none;
+            background-color: white;
+            color: goldenrod;
+            width: 85dvw;
+            height: 5dvh;
+            border-radius: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+            transition: all 0.3s;
+            /*margin-bottom:5dvh;*/
+        }
+
+        #addbutton{
+          width: 85dvw;
+          height: 5dvh;
+          border-radius: 12px;
+          font-weight: bold;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          font-size: 12px;
+          background: rgba(218, 165, 32, 0.725);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          color:white;
+          outline:none;
+          position:absolute;
+          bottom:10px;
+        }
+
+        #closebutton{
+            position:absolute;
+            top:10px;
+            right: 10px;
+            background: none;
+            border:none;
+            outline:none;
+            color:white;
+        }
+
+        #closebutton svg{
+            fill:white;
+        }
+
+        .divcirkel{
+            background-color: #242424;
+            width: 25px;
+            height:25px;
+            display:flex;
+            border-radius:50%;
+            border: 3px solid #242424;
+            overflow:hidden;
+            transform: scale(1);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .divcirkel:active {
+            transform: scale(1.5);
+            z-index: 1000;
+        }
+
+        .divcirkel img {
+            width:100%;
+            height:100%;
+            min-width: 100%;
+            min-height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        #navpill {
+            width:50dvw;
+            height:7dvh;
+            border-radius:50px;
+            background: rgba(46, 46, 46, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display:flex;
+            gap:3.5dvw;
+            z-index:3;
+            position:fixed;
+            bottom:10px;
+            left:50%;
+            transform: translate(-50%,0%);
+            align-items: center;
+            justify-content: center;
+        }
+
+        #navpill button{
+            background: none;
+            background-color: #00000000;
+            color:white;
+            border:none;
+            outline:none;
+            width:6dvw;
+            height:6dvw;
+            padding:0;
+            margin:0;
+            display:flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+
+        div, h1,h2,h3,h4,h5,p,svg {
+           user-select: none; 
+        }
+
+        svg{
+            width:6dvw;
+            height:6dvw;
+            fill:white;
+            transition:0.2s;
+            user-select: none;
+        }
+
+        .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
+            background-color: rgba(75, 75, 75, 0.808) !important;
+        }
+
+        .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
+            background: rgba(218, 165, 32, 0.507) !important;
+            color: white !important;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-weight: bold;
+        }
+
+        #svghome{
+            fill:goldenrod;
+        }
+
+        hr{
+            width:50dvw;
+        }
+
+        #imagepopup{
+            width:40dvw;
+            height:8dvh;
+            border-radius:15px;
+            background: rgba(46, 46, 46, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display:none;
+            gap:3.5dvw;
+            z-index:4;
+            position:fixed;
+            bottom:12dvh;
+            left:50%;
+            transform: translate(-50%,0%);
+            align-items: center;
+            justify-content: center;
+            overflow:hidden;
+        }
+
+        #imagepopup img{
+            width:6dvh;
+            height:6dvh;
+            position:absolute;
+            left:1dvh;
+            bottom:1dvh;
+            border-radius: calc(15px - 1dvh);
+            outline:none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            object-fit: cover;
+        }
+
+        #imagepopup h2{
+            position:absolute;
+            display:flex;
+            margin:0;
+            padding:0;
+            left:7.7dvh;
+            top:2dvh;
+            font-size:3dvw;
+            color:rgb(131, 131, 131);
+        }
+
+        #imagepopup h4{
+            position:absolute;
+            display:flex;
+            margin:0;
+            padding:0;
+            left:7.7dvh;
+            top:4.2dvh;
+            font-size:2.2dvw;
+            color:rgb(108, 108, 108);
+        }
+        #gallery{
+            position:fixed;
+            left:0;
+            top:0;
+            display:none;
+            z-index:2;
+            background-color: #222222;
+            margin:0;
+            padding:4dvw;
+            height: calc(100dvh - 4dvw - 22dvw);
+            width: 92dvw;
+            flex-wrap:wrap;
+            gap:6dvw;
+            align-content: flex-start;
+            overflow:auto;
+            padding-bottom: 22dvw;
+        }
+
+        .galleryimg{
+            width:42dvw;
+            height:42dvw;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            object-fit: cover;
+            border-radius:15px;
+        }
+
+        #trips{
+            position:fixed;
+            left:0;
+            top:0;
+            display:none;
+            z-index:2;
+            background-color: #222222;
+            margin:0;
+            padding:4dvw;
+            height: calc(100dvh - 4dvw - 22dvw);
+            width: 92dvw;
+            flex-direction: column;
+            gap:6dvw;
+            align-content: flex-start;
+            overflow:auto;
+            padding-bottom: 22dvw;
+            align-items: center;
+            padding-top:5dvh;
+        }
+
+        .trip{
+            width:84dvw;
+            height:42dvw;
+            border: 2px solid rgb(88, 88, 88,0.8);
+            outline:none;
+            object-fit: cover;
+            border-radius:15px;
+            position:relative;
+            overflow:hidden;
+            flex-shrink: 0;
+        }
+
+        .trip h3{
+            display:flex;
+            margin:0;
+            position: absolute;
+            bottom:4dvh;
+            left:2dvw;
+            color:white;
+            z-index:9;
+        }
+
+        .trip h4{
+            display:flex;
+            margin:0;
+            position: absolute;
+            bottom:calc(4dvh - 16px);
+            left:2dvw;
+            color:rgba(255, 255, 255, 0.792);
+            z-index:9;
+        }
+
+        .trip::after {
+            content:"";
+            width: 100%;
+            height: 100%;
+            position:absolute;
+            top:0;
+            left:0;
+            background: linear-gradient(0deg, black,transparent 95%);
+        }
+
+        .trip img{
+            object-fit: cover;
+            width:100%;
+            height: 100%;
+        }
+
+        #tripviewer{
+            width:100dvw;
+            height:85dvh;
+            border-radius: 15px 15px 0px 0px;
+            position: fixed;
+            left:0;
+            bottom:0;
+            z-index:5;
+            color:white;
+            background-color: transparent;
+            padding:0;
+            margin:0;
+            display:flex;
+            flex-direction: column;
+            font-family: arial;
+            overflow:hidden;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        #tripviewer.active{
+            transform: translateY(0%);
+        }
+
+        .tripblurlaag{
+            width:120%;
+            height:120%; 
+            position:absolute;
+            left:-10%;
+            top:-10%;/* Neemt alle beschikbare ruimte boven de databox in */
+            display: flex;
+            z-index: 1;
+            background-size: cover;
+            background-position: center;
+            filter: blur(20px) brightness(0.5);
+            -webkit-filter: blur(20px) brightness(0.5);
+            background-color: #222222;
+        }
+
+        .tripimgcontainer{
+            height:60%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+            position: relative;
+            padding:15px;
+            padding-top: 0px;
+            border:none;
+            outline:none;
+            max-height: 70dvh;
+        }
+
+        .trippopupimg{
+            max-width: 100%;
+            max-height: 85%;
+            border-radius:10px;
+            object-fit: contain;
+            border:none;
+            outline:none;
+            padding:0;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.225);
+        }
+
+        .tripdata{
+            width:calc(100% - 5dvw);
+            height:30%;
+            margin:0;
+            padding-left:5dvw;
+            padding-top:5dvw;
+            padding-bottom:15dvw;
+            display:flex;
+            z-index:10;
+            position:absolute;
+            bottom:0;
+            flex-direction:column;
+            /*border-radius: 25px 25px 0px 0px;*/
+            background: transparent;
+            outline:none;
+            gap:1dvh;
+            align-items: flex-start;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .tripdata::-webkit-scrollbar{
+            display:none;
+        }
+
+        .tripdata h2{
+            display:flex;
+            margin:0;
+            padding:0;
+            /*position:absolute;
+            top:4dvw;
+            left:4dvw;*/
+        }
+        .tripdata h4{
+            display:flex;
+            margin:0;
+            padding:0;
+            color: rgb(236, 234, 234);
+            /*position:absolute;
+            top:12dvw;
+            left:4dvw;*/
+        }
+        .tripdiscr{
+            display:flex;
+            margin:0;
+            padding:0;
+            width: 85%;
+            /*position:absolute;
+            top:18dvw;
+            left:4dvw;*/
+            color:rgb(184, 184, 184);
+            text-wrap: wrap;
+        }
+
+        .tripclosebutton{
+            position:fixed;
+            top:10px;
+            right: 10px;
+            background: none;
+            border:none;
+            outline:none;
+            color:white;
+            display:flex;
+            z-index:9;
+        }
+
+        .triphr{
+            width:40dvw;
+            background-color: goldenrod;
+            color:goldenrod;
+            height:0.6dvh;
+            border-radius: 150px;
+            align-self: flex-start;
+            margin-left:0;
+            margin-top:1dvh;
+            margin-bottom:1dvh;
+        }
+
+        #tripscroll{
+            height:100%;
+            width:100dvw;
+            margin:0;
+            padding:0;
+            border-radius: 15px 15px 0px 0px;
+            overflow-x:auto;
+            display:flex;
+            flex-direction: row;
+            gap:2dvw;
+            scroll-snap-type: x mandatory;
+        }
+
+        .tripday{
+            width:100dvw;
+            height:100%;
+            flex-shrink: 0;
+            overflow:hidden;
+            position:relative;
+            scroll-snap-align: center;
+            border-radius: 15px 15px 0px 0px;
+        }
+
+        #fullimagepopup{
+            width:100dvw;
+            height:100dvh;
+            position: fixed;
+            left:0;
+            top:0;
+            z-index:5;
+            color:white;
+            background-color: #222222;
+            padding:0;
+            margin:0;
+            display:flex;
+            transform: translateY(100%);
+            flex-direction: column;
+            font-family: arial;
+            overflow:hidden;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        #fullimagepopup.active{
+            transform: translateY(0%);
+        }
+
+        #blurlaag{
+            width:110%;
+            height:110%; 
+            position:fixed;
+            left:-5%;
+            top:-5%;/* Neemt alle beschikbare ruimte boven de databox in */
+            display: flex;
+            z-index: 1;
+            background-size: cover;
+            background-position: center;
+            filter: blur(20px) brightness(0.5);
+            -webkit-filter: blur(20px) brightness(0.5);
+        }
+
+        #fullimgcontainer{
+            flex:1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+            position: relative;
+            padding:15px;
+            padding-top: 0px;
+            border:none;
+            outline:none;
+            max-height: 70dvh;
+        }
+
+        #fullpopupimg{
+            max-width: 100%;
+            max-height: 85%;
+            border-radius:10px;
+            object-fit: contain;
+            border:none;
+            outline:none;
+            padding:0;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.225);
+        }
+
+        #imgdata{
+            width:calc(100% - 5dvw);
+            height:30dvh;
+            margin:0;
+            padding-left:5dvw;
+            padding-top:5dvw;
+            padding-bottom:15dvw;
+            display:flex;
+            z-index:2;
+            flex-direction:column;
+            border-radius: 25px 25px 0px 0px;
+            background: rgba(0, 0, 0, 0.414);
+            outline:1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            gap:1dvh;
+            align-items: flex-start;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        #imgdata::-webkit-scrollbar{
+            display:none;
+        }
+
+        #imgdata h2{
+            display:flex;
+            margin:0;
+            padding:0;
+            /*position:absolute;
+            top:4dvw;
+            left:4dvw;*/
+        }
+        #imgdata h4{
+            display:flex;
+            margin:0;
+            padding:0;
+            color: rgb(236, 234, 234);
+            /*position:absolute;
+            top:12dvw;
+            left:4dvw;*/
+        }
+        #imgdiscr{
+            display:flex;
+            margin:0;
+            padding:0;
+            width: 85%;
+            /*position:absolute;
+            top:18dvw;
+            left:4dvw;*/
+            color:rgb(184, 184, 184);
+            text-wrap: wrap;
+        }
+
+        #fullmapview {
+            width:25dvw;
+            height:5dvh;
+            border-radius:50px;
+            background: rgba(0, 0, 0, 0.414);
+            border:1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display:flex;
+            z-index:13;
+            position:absolute;
+            bottom: 1dvh;
+            right:1.5dvw;
+            align-items: center;
+            justify-content: center;
+            color:white;
+            padding:0;
+            margin:0;
+            transform: scale(1);
+            transition: 0.2s;
+        }
+
+        #fullmapview:active{
+            transform: scale(1.1);
+            transition: 0.2s;
+        }
+
+        #fullmapview p{
+            display:flex;
+            margin:0;
+            padding:0;
+        }
+
+        #fullclosebutton{
+            position:fixed;
+            top:10px;
+            right: 10px;
+            background: none;
+            border:none;
+            outline:none;
+            color:white;
+            display:flex;
+            align-items: center;
+            justify-content: center;
+            z-index:9;
+        }
+
+        #fulldeletebutton{
+            position:fixed;
+            top:10px;
+            left: 10px;
+            background: none;
+            border:none;
+            outline:none;
+            color:white;
+            display:flex;
+            align-items: center;
+            justify-content: center;
+            z-index:9;
+            transform: scale(1);
+            transition: 0.5s;
+        }
+
+        #fullhr{
+            width:40dvw;
+            background-color: goldenrod;
+            color:goldenrod;
+            height:0.6dvh;
+            border-radius: 150px;
+            align-self: flex-start;
+            margin-left:0;
+            margin-top:1dvh;
+            margin-bottom:1dvh;
+            outline:none;
+            border:none;
+            flex-shrink: 0;
+        }
+
+        hr{
+            outline:none;
+            border:none;  
+            height:0.4dvh;
+            border-radius:50px;
+            display:flex;
+            z-index:9;
+            flex-shrink: 0;
+        }
+
+        #addtrip{
+            display:none;
+            height:42dvh;
+            padding-top:7dvh;
+            position: fixed;
+            left:50%;
+            top:50%;
+            transform: translate(-50%,-50%);
+        }
+
+        #tripaddclose{
+            position:absolute;
+            top:10px;
+            right: 10px;
+            background: none;
+            border:none;
+            outline:none;
+            color:white;
+        }
+
+        #tripaddclose svg{
+            fill:white;
+        }
+
+        label{
+            color:gray;
+            font-size:4dvw;
+            display:flex;
+            margin:0;
+        }
+
+        .lblinpt {
+            margin-top:-1dvh;
+        }
+
+        #addtripbutton{
+            position:absolute;
+            top:10px;
+            right: 10px;
+            background: none;
+            border:none;
+            outline:none;
+            color:white;
+        }
+    </style>
+</head>
+<body>
+    <div class="add" id="add">
+        <button id="closebutton" onclick="closeadd()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M504.6 148.5C515.9 134.9 514.1 114.7 500.5 103.4C486.9 92.1 466.7 93.9 455.4 107.5L320 270L184.6 107.5C173.3 93.9 153.1 92.1 139.5 103.4C125.9 114.7 124.1 134.9 135.4 148.5L278.3 320L135.4 491.5C124.1 505.1 125.9 525.3 139.5 536.6C153.1 547.9 173.3 546.1 184.6 532.5L320 370L455.4 532.5C466.7 546.1 486.9 547.9 500.5 536.6C514.1 525.3 515.9 505.1 504.6 491.5L361.7 320L504.6 148.5z"/></svg></button>
+        <button id="urlbutton" onclick="document.getElementById('urlinput').click()"><input id="urlinput" type="file" accept="image/*">upload image</button>
+        <hr style="background-color:gray">
+        <input id="titelinput" type="text" placeholder="Titel" maxlength="15" required>
+        <input id="dateinput" type="date" placeholder="Date" required>
+        <textarea id="descrinput" placeholder="Description" required></textarea>
+        <hr style="background-color:gray">
+        <select name="tripselect" id="tripselect">
+            <option value="none">No Trip</option>
+        </select>
+        <hr style="background-color:gray">
+        <button id="locafinder" onclick="getloca()">use my location</button>
+        <button id="locachooser" onclick="chooseloca()">choose location on map</button>
+        <input id="latinput" placeholder="latitude" type="number" required>
+        <input id="longinput" placeholder="longtitude" type="number" required>
+        <input type="submit" id="addbutton" onclick="addimage()" value="add to map">
+    </div>
+     <div class="add" id="addtrip">
+        <button id="tripaddclose" onclick="closetripadd()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M504.6 148.5C515.9 134.9 514.1 114.7 500.5 103.4C486.9 92.1 466.7 93.9 455.4 107.5L320 270L184.6 107.5C173.3 93.9 153.1 92.1 139.5 103.4C125.9 114.7 124.1 134.9 135.4 148.5L278.3 320L135.4 491.5C124.1 505.1 125.9 525.3 139.5 536.6C153.1 547.9 173.3 546.1 184.6 532.5L320 370L455.4 532.5C466.7 546.1 486.9 547.9 500.5 536.6C514.1 525.3 515.9 505.1 504.6 491.5L361.7 320L504.6 148.5z"/></svg></button>
+        <button id="tripurlbutton" onclick="document.getElementById('tripurlinput').click()"><input id="tripurlinput" type="file" accept="image/*">upload cover image</button>
+        <input id="triptitelinput" type="text" placeholder="Titel" maxlength="15">
+        <div class="lblinpt"><label>From</label><input id="tripdateinput" type="date" placeholder="start date"></div>
+        <div class="lblinpt"><label>To</label><input id="tripdateinput2" type="date" placeholder="end date"></div>
+        <button id="addbutton" onclick="addtrip()">add trip</button>
+    </div>
+    <div id="fullimagepopup">
+        <button id="fullclosebutton" onclick="closefull()"><svg onclick="closefull()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M504.6 148.5C515.9 134.9 514.1 114.7 500.5 103.4C486.9 92.1 466.7 93.9 455.4 107.5L320 270L184.6 107.5C173.3 93.9 153.1 92.1 139.5 103.4C125.9 114.7 124.1 134.9 135.4 148.5L278.3 320L135.4 491.5C124.1 505.1 125.9 525.3 139.5 536.6C153.1 547.9 173.3 546.1 184.6 532.5L320 370L455.4 532.5C466.7 546.1 486.9 547.9 500.5 536.6C514.1 525.3 515.9 505.1 504.6 491.5L361.7 320L504.6 148.5z"/></svg></button>
+        <button id="fulldeletebutton"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M232.7 69.9L224 96L128 96C110.3 96 96 110.3 96 128C96 145.7 110.3 160 128 160L512 160C529.7 160 544 145.7 544 128C544 110.3 529.7 96 512 96L416 96L407.3 69.9C402.9 56.8 390.7 48 376.9 48L263.1 48C249.3 48 237.1 56.8 232.7 69.9zM512 208L128 208L149.1 531.1C150.7 556.4 171.7 576 197 576L443 576C468.3 576 489.3 556.4 490.9 531.1L512 208z"/></svg></button>
+        <div id="blurlaag"></div>
+        <div id="fullimgcontainer">
+            <img id="fullpopupimg" src="">
+            <button id="fullmapview"><p>view on map</p></button>
+        </div>
+        <div id="imgdata">
+            <h2 id="fullimgtitel">012345678912345</h2>
+            <h4 id="fullimgdate">5 January 2025</h4>
+            <h4 id="fullimgcoord">67.6767, 6767</h4>
+            <hr id="fullhr">
+            <h5 id="imgdiscr">wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww </h5>
+        </div>
+    </div>
+    <div id="imagepopup">
+        <img id="popupimg" src="">
+        <h2 id="imgtitel">012345678912345</h2>
+        <h4 id="imgdate">67.6767, 6767</h4>
+    </div>
+    <div id="gallery">
+    </div>
+    <div id="tripviewer">
+        <button class="tripclosebutton" onclick="closetrip()"><svg onclick="closetrip()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M504.6 148.5C515.9 134.9 514.1 114.7 500.5 103.4C486.9 92.1 466.7 93.9 455.4 107.5L320 270L184.6 107.5C173.3 93.9 153.1 92.1 139.5 103.4C125.9 114.7 124.1 134.9 135.4 148.5L278.3 320L135.4 491.5C124.1 505.1 125.9 525.3 139.5 536.6C153.1 547.9 173.3 546.1 184.6 532.5L320 370L455.4 532.5C466.7 546.1 486.9 547.9 500.5 536.6C514.1 525.3 515.9 505.1 504.6 491.5L361.7 320L504.6 148.5z"/></svg></button>
+        <div id="tripscroll" onscroll="opwelkegescrollt()">
+        </div>
+    </div>
+    <div id="trips">
+        <button id="addtripbutton" onclick="openaddtrip()"><svg onclick="openaddtrip()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M352 128C352 110.3 337.7 96 320 96C302.3 96 288 110.3 288 128L288 288L128 288C110.3 288 96 302.3 96 320C96 337.7 110.3 352 128 352L288 352L288 512C288 529.7 302.3 544 320 544C337.7 544 352 529.7 352 512L352 352L512 352C529.7 352 544 337.7 544 320C544 302.3 529.7 288 512 288L352 288L352 128z"/></svg></button>
+    </div>
+    <div id="navpill">
+        <button onclick="home()"><svg id="svghome" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M341.8 72.6C329.5 61.2 310.5 61.2 298.3 72.6L74.3 280.6C64.7 289.6 61.5 303.5 66.3 315.7C71.1 327.9 82.8 336 96 336L112 336L112 512C112 547.3 140.7 576 176 576L464 576C499.3 576 528 547.3 528 512L528 336L544 336C557.2 336 569 327.9 573.8 315.7C578.6 303.5 575.4 289.5 565.8 280.6L341.8 72.6zM304 384L336 384C362.5 384 384 405.5 384 432L384 528L256 528L256 432C256 405.5 277.5 384 304 384z"/></svg></button>
+        <button onclick="trips()"><svg id="svgplane" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M552 264C582.9 264 608 289.1 608 320C608 350.9 582.9 376 552 376L424.7 376L265.5 549.6C259.4 556.2 250.9 560 241.9 560L198.2 560C187.3 560 179.6 549.3 183 538.9L237.3 376L137.6 376L84.8 442C81.8 445.8 77.2 448 72.3 448L52.5 448C42.1 448 34.5 438.2 37 428.1L64 320L37 211.9C34.4 201.8 42.1 192 52.5 192L72.3 192C77.2 192 81.8 194.2 84.8 198L137.6 264L237.3 264L183 101.1C179.6 90.7 187.3 80 198.2 80L241.9 80C250.9 80 259.4 83.8 265.5 90.4L424.7 264L552 264z"/></svg></button>
+        <button onclick="closeadd()"><svg id="svgplus" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M352 128C352 110.3 337.7 96 320 96C302.3 96 288 110.3 288 128L288 288L128 288C110.3 288 96 302.3 96 320C96 337.7 110.3 352 128 352L288 352L288 512C288 529.7 302.3 544 320 544C337.7 544 352 529.7 352 512L352 352L512 352C529.7 352 544 337.7 544 320C544 302.3 529.7 288 512 288L352 288L352 128z"/></svg></button>
+        <button onclick="gallery()"><svg id="svgimg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M160 96C124.7 96 96 124.7 96 160L96 480C96 515.3 124.7 544 160 544L480 544C515.3 544 544 515.3 544 480L544 160C544 124.7 515.3 96 480 96L160 96zM224 176C250.5 176 272 197.5 272 224C272 250.5 250.5 272 224 272C197.5 272 176 250.5 176 224C176 197.5 197.5 176 224 176zM368 288C376.4 288 384.1 292.4 388.5 299.5L476.5 443.5C481 450.9 481.2 460.2 477 467.8C472.8 475.4 464.7 480 456 480L184 480C175.1 480 166.8 475 162.7 467.1C158.6 459.2 159.2 449.6 164.3 442.3L220.3 362.3C224.8 355.9 232.1 352.1 240 352.1C247.9 352.1 255.2 355.9 259.7 362.3L286.1 400.1L347.5 299.6C351.9 292.5 359.6 288.1 368 288.1z"/></svg></button>
+        <button><svg id="svgprofile" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M463 448.2C440.9 409.8 399.4 384 352 384L288 384C240.6 384 199.1 409.8 177 448.2C212.2 487.4 263.2 512 320 512C376.8 512 427.8 487.3 463 448.2zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 336C359.8 336 392 303.8 392 264C392 224.2 359.8 192 320 192C280.2 192 248 224.2 248 264C248 303.8 280.2 336 320 336z"/></svg></button>
+    </div>
+    <div id="map"></div>
+
+    <script>
+        var map = L.map('map', {
+            maxBounds: [
+                [-89, -181],
+                [89, 181]
+            ],
+            attributionControl:false,
+            zoomControl: false,
+            bounceAtZoomLimits: false,
+            zoomAnimation: true
+        }).setView([51.505, -0.09], 5);
+
+        L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
+	        minZoom: 3,
+	        maxZoom: 17,
+            keepBuffer: 2,
+            updateWhenIdle: false
+        }).addTo(map);
+
+
+        var markers = L.markerClusterGroup({
+            animate: true,
+            animationDuration: 10000, // 1 seconde voor een vloeiende zoom
+            showCoverageOnHover: false, // Optioneel: haalt de polygoon-lijnen weg bij hover
+        });
+
+map.addLayer(markers);
+
+loadimage();
+
+const urls = [];
+const longs = [];
+const lats = [];
+const triptitels = [];
+const tripdate1 = [];
+const tripdate2 = [];
+const tripcovers = [];
+
+function addimage() {
+ var imageFile = document.getElementById('urlinput').files[0];
+ if(!imageFile){
+    document.getElementById('add').style.display = 'flex';
+    document.getElementById('urlbutton').style.backgroundColor = "rgb(249, 54, 54)";
+    document.getElementById('urlbutton').style.color = "white";
+    return;
+ }
+ urls[urls.length] = imageFile;
+ //urls[urls.length] = URL.createObjectURL(imageFile);
+ var imageUrl = URL.createObjectURL(imageFile);
+ longs[longs.length] = parseFloat(document.getElementById('longinput').value);
+ lats[lats.length] = parseFloat(document.getElementById('latinput').value);
+
+ var nlat = parseFloat(document.getElementById('latinput').value);
+ var nlong = parseFloat(document.getElementById('longinput').value);
+ var ntitel = document.getElementById('titelinput').value;
+ var ndescr = document.getElementById('descrinput').value;
+ var ndate = document.getElementById('dateinput').value;
+ var ntrip = document.getElementById('tripselect').value;
+
+ var niewemarker = {
+        lat: nlat,
+        lng: nlong,
+        photo: imageFile,
+        titel: ntitel,
+        description: ndescr,
+        date: ndate,
+        trip: ntrip
+ }
+
+loadedmarkers.push(niewemarker);
+
+saveimage(nlat, nlong, imageFile, ntitel, ndescr, ndate, ntrip);
+/*setTimeout(function () {
+    let savedMarkers =  localforage.getItem('my_markers') || [];
+    loadedmarkers = savedMarkers;
+}, 600);*/
+
+var ncircle = L.divIcon({
+                className: 'divicon',
+                html: `<div class="divcirkel"><img src="${imageUrl}"></div>`,
+                iconSize: [50, 50],
+                iconAnchor: [25, 25]
+            });
+
+            const marker = L.marker([nlat, nlong], { icon: ncircle });
+            marker.on('click', function (){
+                map.setView([nlat, nlong], 13);
+                momentelehvl = loadedmarkers.length - 1;
+                document.getElementById("popupimg").src = imageUrl;
+                document.getElementById("imgtitel").innerHTML = ntitel;
+                document.getElementById("imgdate").innerHTML = ndate;
+                document.getElementById("imagepopup").style.display = "flex";
+                document.getElementById("imagepopup").onclick = function() {
+                    getfullpopup(loadedmarkers.length - 1);
+                };
+            });
+            markers.addLayer(marker);
+
+document.getElementById("imagepopup").onclick = function () {
+    document.getElementById("fullpopupimg").src = imageUrl;
+    document.getElementById("fullpopupimg").style.backgroundSize = "contain";
+    document.getElementById("fullpopupimg").style.backgroundRepeat = "no-repeat";
+
+    document.getElementById("blurlaag").style.background = `url(${imageUrl})`;
+    document.getElementById("blurlaag").style.backgroundSize = "cover";
+    document.getElementById("blurlaag").style.backgroundPosition = "center";
+    document.getElementById("blurlaag").style.backgroundRepeat = "no-repeat";
+    
+    document.getElementById("fullimgtitel").innerHTML = ntitel;
+    document.getElementById("fullimgdate").innerHTML = ndate;
+    document.getElementById("fullimgcoord").innerHTML = nlat.toFixed(6) + " , " + nlong.toFixed(6);
+    document.getElementById("imgdiscr").innerHTML = ndescr;
+
+    document.getElementById("fullimagepopup").style.display = "flex";
+    document.getElementById('imgdata').scrollTop = 0;
+};
+
+document.getElementById('add').style.display = 'none';
+map.setView([nlat, nlong], 13);
+
+var el = document.createElement("img");
+        el.className = "galleryimg";
+        el.src = imageUrl;
+        el.onclick = function() {
+            getfullpopup(loadedmarkers.length - 1);
+        };
+document.getElementById("gallery").appendChild(el);
+
+document.getElementById("svgplus").style.fill = "white";
+document.getElementById("svghome").style.fill = "goldenrod";
+document.getElementById("svgplane").style.fill = "white";
+document.getElementById("svgimg").style.fill = "white";
+document.getElementById("svgprofile").style.fill = "white";
+
+ console.log(urls);
+ console.log(lats);
+ console.log(longs);
+}
+
+async function saveimage(lat, lng, file, titel, description, date, trip) {
+
+    let savedMarkers = await localforage.getItem('my_markers') || [];
+
+    savedMarkers.push({
+        lat: lat,
+        lng: lng,
+        photo: file,
+        titel: titel,
+        description: description,
+        date: date,
+        trip: trip
+    });
+
+    await localforage.setItem('my_markers', savedMarkers);
+}
+
+let loadedmarkers;
+
+async function loadimage() {
+
+    let savedMarkers = await localforage.getItem('my_markers') || [];
+    loadedmarkers = savedMarkers;
+
+    for(let i = 0; i < savedMarkers.length; i++){
+
+        const photoUrl = URL.createObjectURL(savedMarkers[i].photo);
+
+        var ncircle = L.divIcon({
+                        className: 'divicon',
+                        html: `<div class="divcirkel"><img src="${photoUrl}"></div>`,
+                        iconSize: [50, 50],
+                        iconAnchor: [25, 25]
+                    });
+
+        const marker = L.marker([savedMarkers[i].lat, savedMarkers[i].lng], { icon: ncircle });
+        marker.on('click', function (){
+            map.setView([savedMarkers[i].lat, savedMarkers[i].lng], 13);
+            getpopup(i);
+        });
+        markers.addLayer(marker);
+
+        var el = document.createElement("img");
+        el.className = "galleryimg";
+        el.src = photoUrl;
+        el.onclick = function() {
+            getfullpopup(i);
+        };
+        document.getElementById("gallery").appendChild(el);
+    }
+
+}
+
+var addzichtbaar = 0;
+function closeadd() {
+
+    if(addzichtbaar === 0){
+        document.getElementById("titelinput").value =  "";
+        document.getElementById("dateinput").value =  "";
+        document.getElementById("descrinput").value =  "";
+        document.getElementById("latinput").value =  "";
+        document.getElementById("longinput").value =  "";
+
+        document.getElementById('add').style.display = 'flex';
+        addzichtbaar = 1;
+        document.getElementById("svgplus").style.fill = "goldenrod";
+        document.getElementById("svghome").style.fill = "white";
+        document.getElementById("svgplane").style.fill = "white";
+        document.getElementById("svgimg").style.fill = "white";
+        document.getElementById("svgprofile").style.fill = "white";
+        /*document.getElementById("imagepopup").style.display = "none";
+        document.getElementById("gallery").style.display = "none";*/
+    } else {
+        document.getElementById('add').style.display = 'none';
+        addzichtbaar = 0;
+        document.getElementById("svgplus").style.fill = "white";
+        document.getElementById("svghome").style.fill = "goldenrod";
+        document.getElementById("svgplane").style.fill = "white";
+        document.getElementById("svgimg").style.fill = "white";
+        document.getElementById("svgprofile").style.fill = "white";
+
+        document.getElementById("fullimagepopup").classList.remove("active");
+        document.getElementById("gallery").style.display = "none";
+        document.getElementById("trips").style.display = "none";
+        document.getElementById("tripviewer").classList.remove("active");
+        document.getElementById("map").style.display = "flex";
+        document.getElementById("navpill").style.display = "flex";
+        /*document.getElementById("gallery").style.display = "none";*/
+    }
+
+}
+
+function home(){
+        document.getElementById('add').style.display = 'none';
+        document.getElementById('gallery').style.display = 'none';
+        document.getElementById('trips').style.display = 'none';
+        addzichtbaar = 0;
+        document.getElementById("svgplus").style.fill = "white";
+        document.getElementById("svghome").style.fill = "goldenrod";
+        document.getElementById("svgplane").style.fill = "white";
+        document.getElementById("svgimg").style.fill = "white";
+        document.getElementById("svgprofile").style.fill = "white";
+}
+
+function getloca(){
+    navigator.geolocation.getCurrentPosition((position) => {
+        document.getElementById('latinput').value = position.coords.latitude;
+        document.getElementById('longinput').value = position.coords.longitude;
+    });
+}
+
+var locationpicker = 0;
+
+function chooseloca(){
+    locationpicker = 1;
+    document.getElementById('add').style.display = "none";
+    document.getElementById('gallery').style.display = "none";
+    document.getElementById('trips').style.display = "none";
+}
+
+map.on('click', function(e){
+    if(locationpicker === 1){
+        var gekliktelat = e.latlng.lat;
+        var gekliktelng = e.latlng.lng;
+
+        document.getElementById('latinput').value = gekliktelat;
+        document.getElementById('longinput').value = gekliktelng;
+
+        document.getElementById('add').style.display = "flex";
+        locationpicker = 0;
+    }
+    document.getElementById("imagepopup").style.display = "none";
+})
+
+var zoom1 = map.getZoom(); 
+
+map.on('zoomend', function(e){
+
+    var zoom2 = map.getZoom();
+    if(document.getElementById("imagepopup").style.display === "flex" && zoom2 < zoom1){
+        document.getElementById("imagepopup").style.display = "none";
+    }
+
+    zoom1 = zoom2
+})
+
+map.on('dragstart', function(e){
+    if(document.getElementById("imagepopup").style.display === "flex"){
+        document.getElementById("imagepopup").style.display = "none";
+    }
+})
+
+var momentelehvl;
+
+function getpopup(hvl){
+    momentelehvl = hvl;
+    var titell = loadedmarkers[hvl].titel;
+    var imgg = URL.createObjectURL(loadedmarkers[hvl].photo);
+    var imglatt = Number(loadedmarkers[hvl].lat.toFixed(6));
+    var imglngg = Number(loadedmarkers[hvl].lng.toFixed(6));
+
+    var datum = new Date(loadedmarkers[hvl].date);
+
+    document.getElementById("popupimg").src = imgg;
+    document.getElementById("imgtitel").innerHTML = titell;
+    document.getElementById("imgdate").innerHTML = datum.getDate() + " " + datum.toLocaleString("en-US", {month:"long"}) + " " + datum.getFullYear();
+
+    document.getElementById("imagepopup").style.display = "flex";
+    document.getElementById("imagepopup").onclick = function () {
+        getfullpopup(hvl);
+    };
+    popupopen = 1;
+}
+
+function gallery(){
+    document.getElementById("gallery").style.display = "flex";
+    document.getElementById("trips").style.display = "none";
+    document.getElementById("add").style.display = "none";
+    document.getElementById("imagepopup").style.display = "none";
+    document.getElementById("fullimagepopup").classList.remove("active");
+
+    document.getElementById("svgplus").style.fill = "white";
+    document.getElementById("svghome").style.fill = "white";
+    document.getElementById("svgplane").style.fill = "white";
+    document.getElementById("svgimg").style.fill = "goldenrod";
+    document.getElementById("svgprofile").style.fill = "white";
+}
+
+function trips(){
+    document.getElementById("trips").style.display = "flex";
+    document.getElementById("gallery").style.display = "none";
+    document.getElementById("add").style.display = "none";
+    document.getElementById("imagepopup").style.display = "none";
+    document.getElementById("fullimagepopup").classList.remove("active");
+
+    document.getElementById("svgplus").style.fill = "white";
+    document.getElementById("svghome").style.fill = "white";
+    document.getElementById("svgplane").style.fill = "goldenrod";
+    document.getElementById("svgimg").style.fill = "white";
+    document.getElementById("svgprofile").style.fill = "white";
+}
+
+function getfullpopup(hvl){
+    var titell = loadedmarkers[hvl].titel;
+    var description = loadedmarkers[hvl].description;
+    var imgg = URL.createObjectURL(loadedmarkers[hvl].photo);
+    var imglatt = Number(loadedmarkers[hvl].lat.toFixed(6));
+    var imglngg = Number(loadedmarkers[hvl].lng.toFixed(6));
+    var datum = new Date(loadedmarkers[hvl].date);
+
+    document.getElementById("fullpopupimg").src = imgg;
+    document.getElementById("fullpopupimg").style.backgroundSize = "contain";
+    document.getElementById("fullpopupimg").style.backgroundRepeat = "no-repeat";
+
+    document.getElementById("blurlaag").style.background = `url(${imgg})`;
+    document.getElementById("blurlaag").style.backgroundSize = "cover";
+    document.getElementById("blurlaag").style.backgroundPosition = "center";
+    document.getElementById("blurlaag").style.backgroundRepeat = "no-repeat";
+    
+    document.getElementById("fullimgtitel").innerHTML = titell;
+    document.getElementById("fullimgcoord").innerHTML = imglatt + " , " + imglngg;
+    document.getElementById("imgdiscr").innerHTML = description;
+    document.getElementById("fullimgdate").innerHTML = datum.getDate() + " " + datum.toLocaleString("en-US", {month:"long"}) + " " + datum.getFullYear();
+
+    document.getElementById("fullmapview").onclick = function() {
+        viewonmap(hvl);
+    }
+
+    document.getElementById("fulldeletebutton").onclick = function() {
+        deleteimage(hvl);
+    }
+
+    document.getElementById("fullimagepopup").classList.add("active");
+    document.getElementById('imgdata').scrollTop = 0;
+}
+
+function closefull(){
+    document.getElementById("fullimagepopup").classList.remove("active");
+}
+
+function viewonmap(hvl) {
+
+    document.getElementById("fullimagepopup").classList.remove("active");
+    document.getElementById("gallery").style.display = "none";
+    document.getElementById("map").style.display = "flex";
+
+    document.getElementById("svgplus").style.fill = "white";
+    document.getElementById("svghome").style.fill = "goldenrod";
+    document.getElementById("svgplane").style.fill = "white";
+    document.getElementById("svgimg").style.fill = "white";
+    document.getElementById("svgprofile").style.fill = "white";
+
+    var imglatt = loadedmarkers[hvl].lat;
+    var imglngg = loadedmarkers[hvl].lng;
+
+    map.setView([imglatt, imglngg], 13);
+}
+
+
+function gettripimages(wtrip){
+    console.log(wtrip);
+    document.getElementById("fullimagepopup").classList.remove("active");
+    document.getElementById("gallery").style.display = "none";
+    document.getElementById("trips").style.display = "none";
+    document.getElementById("map").style.display = "flex";
+
+    document.getElementById("svgplus").style.fill = "white";
+    document.getElementById("svghome").style.fill = "goldenrod";
+    document.getElementById("svgplane").style.fill = "white";
+    document.getElementById("svgimg").style.fill = "white";
+    document.getElementById("svgprofile").style.fill = "white";
+
+    document.getElementById("tripscroll").innerHTML = "";
+
+    var gesorteerd = loadedmarkers.toSorted(function(a, b){return new Date(a.date) - new Date(b.date)});
+    var hoeveelstevantrip = 0;
+for(let i = 0; i < gesorteerd.length; i++){
+if(parseFloat(gesorteerd[i].trip) === wtrip){
+    hoeveelstevantrip++;
+
+    var titell = gesorteerd[i].titel;
+    var description = gesorteerd[i].description;
+    var imgg = URL.createObjectURL(gesorteerd[i].photo);
+    var imglatt = Number(gesorteerd[i].lat.toFixed(6));
+    var imglngg = Number(gesorteerd[i].lng.toFixed(6));
+    var fullimglatt = Number(gesorteerd[i].lat)
+    var fullimglngg = Number(gesorteerd[i].lng)
+    var datum = new Date(gesorteerd[i].date);
+    console.log(gesorteerd[i].date);
+    console.log(datum);
+
+    var el = document.createElement("div");
+    el.innerHTML = `<div class="tripimgcontainer">
+                        <img id="trippopupimg${hoeveelstevantrip}" class="trippopupimg" src="">
+                    </div>
+                    <div id="tripblurlaag${hoeveelstevantrip}" class="tripblurlaag"></div>
+                    <div id="tripdata${hoeveelstevantrip}" class="tripdata">
+                        <h2 id="tripimgtitel${hoeveelstevantrip}" class="tripimgtitel">012345678912345</h2>
+                        <h4 id="tripimgdate${hoeveelstevantrip}" class="tripimgdate">5 January 2025</h4>
+                        <h4 data-lat="${fullimglatt}" data-lng="${fullimglngg}" id="tripimgcoord${hoeveelstevantrip}" class="tripimgcoord">67.6767, 6767</h4>
+                        <hr class="triphr">
+                        <h5 id="tripdiscr${hoeveelstevantrip}" class="tripdiscr">wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww wwww </h5>
+                    </div>`;
+
+    el.className = "tripday";
+    el.setAttribute("id", `tripday${hoeveelstevantrip}`);
+    document.getElementById("tripscroll").appendChild(el);
+
+    document.getElementById(`trippopupimg${hoeveelstevantrip}`).src = imgg;
+    document.getElementById(`trippopupimg${hoeveelstevantrip}`).style.backgroundSize = "contain";
+    document.getElementById(`trippopupimg${hoeveelstevantrip}`).style.backgroundRepeat = "no-repeat";
+
+    document.getElementById(`tripblurlaag${hoeveelstevantrip}`).style.background = `url(${imgg})`;
+    document.getElementById(`tripblurlaag${hoeveelstevantrip}`).style.backgroundSize = "cover";
+    document.getElementById(`tripblurlaag${hoeveelstevantrip}`).style.backgroundPosition = "center";
+    document.getElementById(`tripblurlaag${hoeveelstevantrip}`).style.backgroundRepeat = "no-repeat";
+    
+    document.getElementById(`tripimgtitel${hoeveelstevantrip}`).innerHTML = titell;
+    document.getElementById(`tripimgcoord${hoeveelstevantrip}`).innerHTML = imglatt + " , " + imglngg;
+    document.getElementById(`tripdiscr${hoeveelstevantrip}`).innerHTML = description;
+    document.getElementById(`tripimgdate${hoeveelstevantrip}`).innerHTML = datum.getDate() + " " + datum.toLocaleString("en-US", {month:"long"}) + " " + datum.getFullYear();
+    
+    document.getElementById(`tripdata${hoeveelstevantrip}`).scrollTop = 0;
+    }
+    }
+    if(document.getElementById("tripscroll").innerHTML === ""){
+        alert("no images for this trip");
+        document.getElementById("trips").style.display = "flex";
+        document.getElementById('svgplane').style.fill = "goldenrod";
+        document.getElementById('svghome').style.fill = "white";
+        return;
+    }
+    document.getElementById("tripviewer").classList.add("active");
+    document.getElementById("navpill").style.display = "none";
+    document.getElementById('tripscroll').scrollLeft = 0;
+    opwelkegescrollt();
+}
+
+const element = document.getElementById("imagepopup");
+const hammer = new Hammer(element);
+
+hammer.get('swipe').set({
+  direction: Hammer.DIRECTION_ALL
+});
+
+hammer.on("swipeup", () => {
+  getfullpopup(momentelehvl);
+});
+
+hammer.on("swipeleft", () => {
+  var jef = momentelehvl + 1;
+  console.log("jef is " + jef);
+  console.log("momentele hvl is " + momentelehvl);
+  if(loadedmarkers[jef]){
+    var jeflat = loadedmarkers[jef].lat;
+    var jeflng = loadedmarkers[jef].lng;
+    console.log(jeflat + " " + jeflng);
+    map.flyTo([jeflat, jeflng], 13);
+    getpopup(jef);
+  } else{
+    jef = 0;
+    var jeflat = loadedmarkers[jef].lat;
+    var jeflng = loadedmarkers[jef].lng;
+    console.log(jeflat + " " + jeflng);
+    map.flyTo([jeflat, jeflng], 13);
+    getpopup(jef);
+  }
+});
+
+hammer.on("swiperight", () => {
+  var jef = momentelehvl - 1;
+  console.log("jef is " + jef);
+  console.log("momentele hvl is " + momentelehvl);
+  if(loadedmarkers[jef]){
+    var jeflat = loadedmarkers[jef].lat;
+    var jeflng = loadedmarkers[jef].lng;
+    console.log(jeflat + " " + jeflng);
+    map.flyTo([jeflat, jeflng], 13);
+    getpopup(jef);
+  } else{
+    jef = loadedmarkers.length - 1;
+    var jeflat = loadedmarkers[jef].lat;
+    var jeflng = loadedmarkers[jef].lng;
+    console.log(jeflat + " " + jeflng);
+    map.flyTo([jeflat, jeflng], 13);
+    getpopup(jef);
+  }
+});
+
+
+const element2 = document.getElementById("fullimagepopup");
+const hammer2 = new Hammer(element2);
+
+hammer2.get('swipe').set({
+  direction: Hammer.DIRECTION_ALL
+});
+
+hammer2.on("swipedown", () => {
+  document.getElementById("fullimagepopup").classList.remove("active");
+});
+
+
+const element3 = document.getElementById("tripscroll");
+const hammer3 = new Hammer(element3);
+
+hammer3.get('swipe').set({
+  direction: Hammer.DIRECTION_ALL
+});
+
+hammer3.on("swipedown", () => {
+  document.getElementById("tripviewer").classList.remove("active");
+});
+
+function closetrip() {
+    recentefoto = -1;
+    document.getElementById("fullimagepopup").classList.remove("active");
+    document.getElementById("gallery").style.display = "none";
+    document.getElementById("trips").style.display = "none";
+    document.getElementById("tripviewer").classList.remove("active");
+    document.getElementById("map").style.display = "flex";
+    document.getElementById("navpill").style.display = "flex";
+
+    document.getElementById("svgplus").style.fill = "white";
+    document.getElementById("svghome").style.fill = "goldenrod";
+    document.getElementById("svgplane").style.fill = "white";
+    document.getElementById("svgimg").style.fill = "white";
+    document.getElementById("svgprofile").style.fill = "white"; 
+}
+
+function addtrip() {
+    var triptitel = document.getElementById("triptitelinput").value;
+    var tripdate1s = document.getElementById("tripdateinput").value;
+    var tripdate2s = document.getElementById("tripdateinput2").value;
+    var imageFile = document.getElementById('tripurlinput').files[0];
+    if(!imageFile){
+       document.getElementById('addtrip').style.display = 'flex';
+       document.getElementById('tripurlbutton').style.backgroundColor = "rgb(249, 54, 54)";
+       document.getElementById('tripurlbutton').style.color = "white";
+       return;
+    }
+    tripcovers[tripcovers.length] = imageFile;
+    var imageUrl = URL.createObjectURL(imageFile);
+
+    triptitels[triptitels.length] = triptitel;
+    tripdate1[tripdate1.length] = tripdate1s;
+    tripdate2[tripdate2.length] = tripdate2s;
+
+    savetrip(imageFile, triptitel, tripdate1s, tripdate2s);
+
+    /*var le = document.createElement("option");
+    le.value = triptitels.length;
+    le.innerHTML = triptitel;
+    document.getElementById("tripselect").appendChild(le);*/
+
+    document.getElementById("addtrip").style.display = "none";
+}
+
+async function savetrip(file, titel, date1, date2) {
+
+    let savedTrips = await localforage.getItem('my_trips') || [];
+
+    savedTrips.push({
+        cover: file,
+        titel: titel,
+        date1: date1,
+        date2: date2,
+    });
+
+    await localforage.setItem('my_trips', savedTrips);
+    loadtrip();
+}
+
+let loadedtrips;
+loadtrip();
+
+async function loadtrip() {
+
+    loadedtrips = await localforage.getItem('my_trips') || [];
+    document.getElementById("trips").innerHTML = "";
+    document.getElementById("tripselect").innerHTML = "";
+
+    var le = document.createElement("option");
+    le.value = undefined;
+    le.innerHTML = "No trip";
+    document.getElementById("tripselect").appendChild(le);
+
+    for(let i = 0; i < loadedtrips.length; i++){
+
+        const photoUrl = URL.createObjectURL(loadedtrips[i].cover);
+
+        var dag1 = new Date(loadedtrips[i].date1);
+        var dag2 = new Date(loadedtrips[i].date2);
+
+        var toondag1 = dag1.toLocaleDateString('en-US', {day: 'numeric', month: 'short'});
+        var toondag2 = dag2.toLocaleDateString('en-US', {day: 'numeric', month: 'short'});
+
+        var el = document.createElement("div");
+        el.className = "trip";
+        el.innerHTML = `<h3>${loadedtrips[i].titel}</h3>
+            <h4>${toondag1} - ${toondag2}</h4>
+            <img src="${photoUrl}">`;
+        el.onclick = function() {
+            gettripimages(i);
+            opwelkegescrollt();
+        };
+        document.getElementById("trips").appendChild(el);
+
+        var le = document.createElement("option");
+        le.value = i;
+        le.innerHTML = loadedtrips[i].titel;
+        document.getElementById("tripselect").appendChild(le);
+    }
+
+}
+
+function closetripadd(){
+    document.getElementById("addtrip").style.display = "none";
+}
+
+function openaddtrip(){
+    document.getElementById("addtrip").style.display = "flex";
+}
+
+var recentefoto = -1;
+function opwelkegescrollt(){
+    var viewerHoogte = document.getElementById("tripviewer").offsetHeight;
+    // hoeveel van links / breedte van 1 foto ding afgerond  => op welke foto gescrollt
+    var welkefoto = Math.round(document.getElementById("tripscroll").scrollLeft / document.getElementById("tripscroll").offsetWidth);
+    var panhoogte = document.getElementById("tripscroll").offsetHeight - (document.body.offsetHeight / 2) + ((document.body.offsetHeight - document.getElementById("tripscroll").offsetHeight) / 2) - 10;
+
+    if(welkefoto != recentefoto){
+        var scrollfotoloca = document.getElementById(`tripimgcoord${welkefoto + 1}`);
+
+        var coordnrpunt = map.project([scrollfotoloca.dataset.lat, scrollfotoloca.dataset.lng], 10);
+        coordnrpunt.y += panhoogte;
+        var puntnrcoord = map.unproject(coordnrpunt,10);
+        map.setView(puntnrcoord, 10, {animate:true, duration:1.5});
+
+        recentefoto = welkefoto;
+    }
+}
+
+async function deleteimage(hvl){
+    if (confirm("Remove image?")){
+        loadedmarkers.splice(hvl, 1);
+
+        await localforage.setItem('my_markers', loadedmarkers);
+
+        location.reload();
+    }
+}
+    </script>
+</body>
+</html>
