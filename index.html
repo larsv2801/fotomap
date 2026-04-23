@@ -12,6 +12,7 @@
      <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
      <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster-src.js"></script>
      <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/leaflet-double-touch-drag-zoom@1.0.0/dist/leaflet-double-touch-drag-zoom.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>fotomap</title>
@@ -436,6 +437,7 @@
             align-content: flex-start;
             overflow:auto;
             padding-bottom: 22dvw;
+            flex-direction:row;
         }
 
         .galleryimg{
@@ -845,7 +847,7 @@
         #fulldeletebutton{
             position:fixed;
             top:10px;
-            left: 10px;
+            left: 5px;
             background: none;
             border:none;
             outline:none;
@@ -988,6 +990,44 @@
             100% {background-position: 0 0;}
         }
 
+        #fulloptions{
+            width:35dvw;
+            height:9dvh;
+            border-radius:15px;
+            background: rgba(0, 0, 0, 0.414);
+            border:1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display:none;
+            flex-direction: column;
+            overflow:hidden;
+            z-index:13;
+            position:absolute;
+            top: 1dvh;
+            left:8.5dvw;
+            align-items: center;
+            justify-content: center;
+            color:white;
+            padding:0;
+            margin:0;
+            transform: scale(1);
+            transition: 0.2s;
+        }
+
+        .fulloption{
+            text-align: center;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            height:4.5dvh;
+            width:35dvw;
+            /*border:red 1px solid;*/
+            flex-shrink:none;
+        }
+
+        #fulloption1 {
+            border-bottom:gray solid 1px;
+        }
+
     </style>
 </head>
 <body>
@@ -1019,7 +1059,11 @@
     </div>
     <div id="fullimagepopup">
         <button id="fullclosebutton" onclick="closefull()"><svg onclick="closefull()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M504.6 148.5C515.9 134.9 514.1 114.7 500.5 103.4C486.9 92.1 466.7 93.9 455.4 107.5L320 270L184.6 107.5C173.3 93.9 153.1 92.1 139.5 103.4C125.9 114.7 124.1 134.9 135.4 148.5L278.3 320L135.4 491.5C124.1 505.1 125.9 525.3 139.5 536.6C153.1 547.9 173.3 546.1 184.6 532.5L320 370L455.4 532.5C466.7 546.1 486.9 547.9 500.5 536.6C514.1 525.3 515.9 505.1 504.6 491.5L361.7 320L504.6 148.5z"/></svg></button>
-        <button id="fulldeletebutton"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M232.7 69.9L224 96L128 96C110.3 96 96 110.3 96 128C96 145.7 110.3 160 128 160L512 160C529.7 160 544 145.7 544 128C544 110.3 529.7 96 512 96L416 96L407.3 69.9C402.9 56.8 390.7 48 376.9 48L263.1 48C249.3 48 237.1 56.8 232.7 69.9zM512 208L128 208L149.1 531.1C150.7 556.4 171.7 576 197 576L443 576C468.3 576 489.3 556.4 490.9 531.1L512 208z"/></svg></button>
+        <button id="fulldeletebutton"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M320 208C289.1 208 264 182.9 264 152C264 121.1 289.1 96 320 96C350.9 96 376 121.1 376 152C376 182.9 350.9 208 320 208zM320 432C350.9 432 376 457.1 376 488C376 518.9 350.9 544 320 544C289.1 544 264 518.9 264 488C264 457.1 289.1 432 320 432zM376 320C376 350.9 350.9 376 320 376C289.1 376 264 350.9 264 320C264 289.1 289.1 264 320 264C350.9 264 376 289.1 376 320z"/></svg></button>
+        <div id="fulloptions">
+            <div class="fulloption" id="fulloption1">Edit Image</div>
+            <div class="fulloption" id="fulloption2">Delete Image</div>
+        </div>
         <div id="blurlaag"></div>
         <div id="fullimgcontainer">
             <img id="fullpopupimg" src="">
@@ -1069,12 +1113,13 @@
             attributionControl:false,
             zoomControl: false,
             bounceAtZoomLimits: false,
-            zoomAnimation: true
+            zoomAnimation: true,
+            doubleTouchDragZoom: true
         }).setView([51.505, -0.09], 5);
 
         L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=f66484d3-8bde-4a47-a917-6454ec527f22', {
 	        minZoom: 3,
-	        maxZoom: 17,
+	        maxZoom: 20,
             keepBuffer: 2,
             updateWhenIdle: false
         }).addTo(map);
@@ -1132,10 +1177,6 @@ function addimage() {
 loadedmarkers.push(niewemarker);
 
 saveimage(nlat, nlong, imageFile, ntitel, ndescr, ndate, ntrip);
-/*setTimeout(function () {
-    let savedMarkers =  localforage.getItem('my_markers') || [];
-    loadedmarkers = savedMarkers;
-}, 600);*/
 
 var ncircle = L.divIcon({
                 className: 'divicon',
@@ -1146,7 +1187,11 @@ var ncircle = L.divIcon({
 
             const marker = L.marker([nlat, nlong], { icon: ncircle });
             marker.on('click', function (){
-                map.setView([nlat, nlong], 13);
+                if(map.getZoom() < 13){
+                    map.setView([nlat, nlong], 13);
+                } else {
+                    map.setView([nlat, nlong], map.getZoom());
+                };
                 momentelehvl = loadedmarkers.length - 1;
                 document.getElementById("popupimg").src = imageUrl;
                 document.getElementById("imgtitel").innerHTML = ntitel;
@@ -1236,7 +1281,11 @@ async function loadimage() {
 
         const marker = L.marker([savedMarkers[i].lat, savedMarkers[i].lng], { icon: ncircle });
         marker.on('click', function (){
-            map.setView([savedMarkers[i].lat, savedMarkers[i].lng], 13);
+            if(map.getZoom() < 13){
+                    map.setView([savedMarkers[i].lat, savedMarkers[i].lng], 13);
+            } else {
+                    map.setView([savedMarkers[i].lat, savedMarkers[i].lng], map.getZoom());
+            };
             getpopup(i);
         });
         markers.addLayer(marker);
@@ -1245,9 +1294,10 @@ async function loadimage() {
         el.className = "galleryimg";
         el.src = photoUrl;
         el.onclick = function() {
-            getfullpopup(i);
+            galleryfullpopup(i);
         };
         document.getElementById("gallery").appendChild(el);
+
     }
 
 }
@@ -1280,7 +1330,6 @@ function closeadd() {
         document.getElementById("svgimg").style.fill = "white";
         document.getElementById("svgprofile").style.fill = "white";
 
-        document.getElementById("fullimagepopup").classList.remove("active");
         document.getElementById("gallery").style.display = "none";
         document.getElementById("trips").style.display = "none";
         document.getElementById("tripviewer").classList.remove("active");
@@ -1354,6 +1403,7 @@ map.on('dragstart', function(e){
 })
 
 var momentelehvl;
+var fulloptionsopen = 0;
 
 function getpopup(hvl){
     momentelehvl = hvl;
@@ -1361,7 +1411,7 @@ function getpopup(hvl){
     var imgg = URL.createObjectURL(loadedmarkers[hvl].photo);
     var imglatt = Number(loadedmarkers[hvl].lat.toFixed(6));
     var imglngg = Number(loadedmarkers[hvl].lng.toFixed(6));
-
+    var description = loadedmarkers[hvl].description;
     var datum = new Date(loadedmarkers[hvl].date);
 
     document.getElementById("popupimg").src = imgg;
@@ -1373,6 +1423,45 @@ function getpopup(hvl){
         getfullpopup(hvl);
     };
     popupopen = 1;
+
+
+    document.getElementById("fullpopupimg").src = imgg;
+    document.getElementById("fullpopupimg").style.backgroundSize = "contain";
+    document.getElementById("fullpopupimg").style.backgroundRepeat = "no-repeat";
+
+    document.getElementById("blurlaag").style.background = `url(${imgg})`;
+    document.getElementById("blurlaag").style.backgroundSize = "cover";
+    document.getElementById("blurlaag").style.backgroundPosition = "center";
+    document.getElementById("blurlaag").style.backgroundRepeat = "no-repeat";
+    
+    document.getElementById("fullimgtitel").innerHTML = titell;
+    document.getElementById("fullimgcoord").innerHTML = imglatt + " , " + imglngg;
+    document.getElementById("imgdiscr").innerHTML = description;
+    document.getElementById("fullimgdate").innerHTML = datum.getDate() + " " + datum.toLocaleString("en-US", {month:"long"}) + " " + datum.getFullYear();
+
+    document.getElementById("fullmapview").onclick = function() {
+        viewonmap(hvl);
+    }
+
+    document.getElementById("fulldeletebutton").onclick = function() {
+        if(fulloptionsopen === 0){
+            document.getElementById("fulloptions").style.display = "flex";
+            fulloptionsopen = 1;
+        } else {
+            document.getElementById("fulloptions").style.display = "none";
+            fulloptionsopen = 0;
+        }
+    }
+
+    document.getElementById("fulloption1").onclick = function() {
+        editimage(hvl);
+    }
+
+    document.getElementById("fulloption2").onclick = function() {
+        deleteimage(hvl);
+    }
+
+    document.getElementById('imgdata').scrollTop = 0;
 }
 
 function gallery(){
@@ -1406,37 +1495,7 @@ function trips(){
 }
 
 function getfullpopup(hvl){
-    var titell = loadedmarkers[hvl].titel;
-    var description = loadedmarkers[hvl].description;
-    var imgg = URL.createObjectURL(loadedmarkers[hvl].photo);
-    var imglatt = Number(loadedmarkers[hvl].lat.toFixed(6));
-    var imglngg = Number(loadedmarkers[hvl].lng.toFixed(6));
-    var datum = new Date(loadedmarkers[hvl].date);
-
-    document.getElementById("fullpopupimg").src = imgg;
-    document.getElementById("fullpopupimg").style.backgroundSize = "contain";
-    document.getElementById("fullpopupimg").style.backgroundRepeat = "no-repeat";
-
-    document.getElementById("blurlaag").style.background = `url(${imgg})`;
-    document.getElementById("blurlaag").style.backgroundSize = "cover";
-    document.getElementById("blurlaag").style.backgroundPosition = "center";
-    document.getElementById("blurlaag").style.backgroundRepeat = "no-repeat";
-    
-    document.getElementById("fullimgtitel").innerHTML = titell;
-    document.getElementById("fullimgcoord").innerHTML = imglatt + " , " + imglngg;
-    document.getElementById("imgdiscr").innerHTML = description;
-    document.getElementById("fullimgdate").innerHTML = datum.getDate() + " " + datum.toLocaleString("en-US", {month:"long"}) + " " + datum.getFullYear();
-
-    document.getElementById("fullmapview").onclick = function() {
-        viewonmap(hvl);
-    }
-
-    document.getElementById("fulldeletebutton").onclick = function() {
-        deleteimage(hvl);
-    }
-
     document.getElementById("fullimagepopup").classList.add("active");
-    document.getElementById('imgdata').scrollTop = 0;
 }
 
 function closefull(){
@@ -1615,7 +1674,7 @@ hammer3.get('swipe').set({
 });
 
 hammer3.on("swipedown", () => {
-  document.getElementById("tripviewer").classList.remove("active");
+  closetrip();
 });
 
 function closetrip() {
@@ -1747,10 +1806,10 @@ function opwelkegescrollt(){
     if(welkefoto != recentefoto){
         var scrollfotoloca = document.getElementById(`tripimgcoord${welkefoto + 1}`);
 
-        var coordnrpunt = map.project([scrollfotoloca.dataset.lat, scrollfotoloca.dataset.lng], 10);
+        var coordnrpunt = map.project([scrollfotoloca.dataset.lat, scrollfotoloca.dataset.lng], 11);
         coordnrpunt.y += panhoogte;
-        var puntnrcoord = map.unproject(coordnrpunt,10);
-        map.setView(puntnrcoord, 10, {animate:true, duration:1.5});
+        var puntnrcoord = map.unproject(coordnrpunt,11);
+        map.flyTo(puntnrcoord, 11, {animate:true, duration:1.5});
 
         recentefoto = welkefoto;
     }
@@ -1796,6 +1855,86 @@ function deleteverything() {
             }
         }
     }
+}
+
+function editimage(i){
+    addzichtbaar = 1;
+    document.getElementById('latinput').value = loadedmarkers[i].lat;
+    document.getElementById('longinput').value = loadedmarkers[i].lng;
+    document.getElementById('titelinput').value = loadedmarkers[i].titel;
+    document.getElementById('descrinput').value = loadedmarkers[i].description;
+    document.getElementById('dateinput').value = loadedmarkers[i].date;
+    document.getElementById('tripselect').value = loadedmarkers[i].trip;
+    document.getElementById('addbutton').value = "Save settings";
+
+    document.getElementById('addbutton').onclick = async function() {
+        loadedmarkers[i].lat = parseFloat(document.getElementById('latinput').value);
+        loadedmarkers[i].lng = parseFloat(document.getElementById('longinput').value);
+        loadedmarkers[i].titel = document.getElementById('titelinput').value;
+        loadedmarkers[i].description = document.getElementById('descrinput').value;
+        loadedmarkers[i].date = document.getElementById('dateinput').value;
+        loadedmarkers[i].trip = document.getElementById('tripselect').value;
+
+        var fotonieuw = document.getElementById('urlinput').files[0];
+        if (fotonieuw) {
+            loadedmarkers[i].photo = fotonieuw;
+        }
+
+        await localforage.setItem('my_markers', loadedmarkers);
+        document.getElementById("add").style.display = "none";
+        location.reload();
+    }
+
+    document.getElementById("add").style.display = "flex";
+}
+
+function galleryfullpopup(hvl){
+    momentelehvl = hvl;
+    var titell = loadedmarkers[hvl].titel;
+    var imgg = URL.createObjectURL(loadedmarkers[hvl].photo);
+    var imglatt = Number(loadedmarkers[hvl].lat.toFixed(6));
+    var imglngg = Number(loadedmarkers[hvl].lng.toFixed(6));
+    var description = loadedmarkers[hvl].description;
+    var datum = new Date(loadedmarkers[hvl].date);
+
+    document.getElementById("fullpopupimg").src = imgg;
+    document.getElementById("fullpopupimg").style.backgroundSize = "contain";
+    document.getElementById("fullpopupimg").style.backgroundRepeat = "no-repeat";
+
+    document.getElementById("blurlaag").style.background = `url(${imgg})`;
+    document.getElementById("blurlaag").style.backgroundSize = "cover";
+    document.getElementById("blurlaag").style.backgroundPosition = "center";
+    document.getElementById("blurlaag").style.backgroundRepeat = "no-repeat";
+    
+    document.getElementById("fullimgtitel").innerHTML = titell;
+    document.getElementById("fullimgcoord").innerHTML = imglatt + " , " + imglngg;
+    document.getElementById("imgdiscr").innerHTML = description;
+    document.getElementById("fullimgdate").innerHTML = datum.getDate() + " " + datum.toLocaleString("en-US", {month:"long"}) + " " + datum.getFullYear();
+
+    document.getElementById("fullmapview").onclick = function() {
+        viewonmap(hvl);
+    }
+
+    document.getElementById("fulldeletebutton").onclick = function() {
+        if(fulloptionsopen === 0){
+            document.getElementById("fulloptions").style.display = "flex";
+            fulloptionsopen = 1;
+        } else {
+            document.getElementById("fulloptions").style.display = "none";
+            fulloptionsopen = 0;
+        }
+    }
+
+    document.getElementById("fulloption1").onclick = function() {
+        editimage(hvl);
+    }
+
+    document.getElementById("fulloption2").onclick = function() {
+        deleteimage(hvl);
+    }
+
+    document.getElementById('imgdata').scrollTop = 0;
+    document.getElementById("fullimagepopup").classList.add("active");
 }
     </script>
 </body>
