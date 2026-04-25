@@ -15,6 +15,7 @@
      <script src="https://cdn.jsdelivr.net/npm/leaflet-double-touch-drag-zoom@1.0.0/dist/leaflet-double-touch-drag-zoom.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/exifreader/dist/exif-reader.min.js"></script>
     <title>fotomap</title>
     <style>
         body{
@@ -60,7 +61,7 @@
         }
 
         .add input[type="number"] {
-          width: 81dvw;
+          width: 37dvw;
           height: 5dvh;
           border-radius: 12px;
           outline:none;
@@ -68,6 +69,18 @@
           transition: 0.2s;
           padding-left:2dvw;
           padding-right:2dvw;
+        }
+
+        #addcoords{
+          width: 85dvw;
+          height: 6dvh;
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: row;
+          padding:0;
+          overflow:hidden;
+          gap:2dvw;
         }
 
         .add input[type="text"] {
@@ -196,7 +209,7 @@
             transform: scale(0.98);
         }
 
-        #locachooser {
+        #locachooser , #locagetter {
             background: none;
             border: 1px solid goldenrod;
             color: goldenrod;
@@ -452,7 +465,7 @@
             flex-wrap:wrap;
             gap:6dvw;
             align-content: flex-start;
-            overflow:auto;
+            overflow-y:auto;
             padding-bottom: 22dvw;
             flex-direction:row;
         }
@@ -711,7 +724,7 @@
             padding:0;
             margin:0;
             display:flex;
-            transform: translateY(100%);
+            transform: translateY(110%);
             flex-direction: column;
             font-family: arial;
             overflow:hidden;
@@ -1082,8 +1095,11 @@
         <hr style="background-color:gray">
         <button id="locafinder" onclick="getloca()">use my location</button>
         <button id="locachooser" onclick="chooseloca()">choose location on map</button>
-        <input id="latinput" placeholder="latitude" type="number" required>
-        <input id="longinput" placeholder="longtitude" type="number" required>
+        <button id="locagetter" onclick="exifcoords()">get location from image data</button>
+        <div id="addcoords">
+            <input id="latinput" placeholder="latitude" type="number" required>
+            <input id="longinput" placeholder="longtitude" type="number" required>
+        </div>
         <input type="submit" id="addbutton" onclick="addimage()" value="add to map">
     </div>
      <div class="add" id="addtrip">
@@ -1171,7 +1187,7 @@
             animate: true,
             animationDuration: 10000,
             showCoverageOnHover: false,
-			disableClusteringAtZoom: 14
+            disableClusteringAtZoom: 14
         });
 
 map.addLayer(markers);
@@ -1194,6 +1210,7 @@ function addimage() {
     document.getElementById('urlbutton').style.color = "white";
     return;
  }
+
  urls[urls.length] = imageFile;
  //urls[urls.length] = URL.createObjectURL(imageFile);
  var imageUrl = URL.createObjectURL(imageFile);
@@ -1875,7 +1892,7 @@ function opwelkegescrollt(){
         var coordnrpunt = map.project([scrollfotoloca.dataset.lat, scrollfotoloca.dataset.lng], 14);
         coordnrpunt.y += panhoogte;
         var puntnrcoord = map.unproject(coordnrpunt,14);
-        map.flyTo(puntnrcoord, 14, {animate:true, duration:3.5});
+        map.flyTo(puntnrcoord, 14, {animate:true, duration:2.7});
 
         recentefoto = welkefoto;
     }
@@ -2035,6 +2052,33 @@ async function deletetrip(hvl){
         await localforage.setItem('my_trips', loadedtrips);
 
         location.reload();
+    }
+}
+
+async function exifcoords(){
+    const file = document.getElementById('urlinput').files[0];
+    if (!file){
+        document.getElementById('add').style.display = 'flex';
+        document.getElementById('urlbutton').style.backgroundColor = "rgb(249, 54, 54)";
+        document.getElementById('urlbutton').style.color = "white";
+        return;
+    }
+
+    try {
+
+        const tags = await ExifReader.load(file);
+
+        const latitudet = tags['GPSLatitude'].description;
+        const longitudet = tags['GPSLongitude'].description;
+
+        if(latitudet && longitudet){
+            document.getElementById('latinput').value = latitudet;
+            document.getElementById('longinput').value = longitudet;
+        } else {
+            console.alert("No Data Found");
+        }
+    } catch (error) {
+        console.error("Fout bij het lezen van metadata:", error);
     }
 }
     </script>
