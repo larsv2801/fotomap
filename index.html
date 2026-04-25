@@ -1095,7 +1095,6 @@
         <hr style="background-color:gray">
         <button id="locafinder" onclick="getloca()">use my location</button>
         <button id="locachooser" onclick="chooseloca()">choose location on map</button>
-        <button id="locagetter" onclick="exifcoords()">get location from image data</button>
         <div id="addcoords">
             <input id="latinput" placeholder="latitude" type="number" required>
             <input id="longinput" placeholder="longtitude" type="number" required>
@@ -2052,33 +2051,6 @@ async function deletetrip(hvl){
         await localforage.setItem('my_trips', loadedtrips);
 
         location.reload();
-    }
-}
-
-async function exifcoords(){
-    const file = document.getElementById('urlinput').files[0];
-    if (!file){
-        document.getElementById('add').style.display = 'flex';
-        document.getElementById('urlbutton').style.backgroundColor = "rgb(249, 54, 54)";
-        document.getElementById('urlbutton').style.color = "white";
-        return;
-    }
-
-    try {
-
-        const tags = await ExifReader.load(file);
-
-        const latitudet = tags['GPSLatitude'].description;
-        const longitudet = tags['GPSLongitude'].description;
-
-        if(latitudet && longitudet){
-            document.getElementById('latinput').value = latitudet;
-            document.getElementById('longinput').value = longitudet;
-        } else {
-            console.alert("No Data Found");
-        }
-    } catch (error) {
-        console.error("Fout bij het lezen van metadata:", error);
     }
 }
     </script>
