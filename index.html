@@ -264,6 +264,23 @@
           bottom:10px;
         }
 
+        #tripaddbutton{
+          width: 85dvw;
+          height: 5dvh;
+          border-radius: 12px;
+          font-weight: bold;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          font-size: 12px;
+          background: rgba(218, 165, 32, 0.725);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          color:white;
+          outline:none;
+          position:absolute;
+          bottom:10px;
+        }
+
         #closebutton{
             position:absolute;
             top:10px;
@@ -990,7 +1007,7 @@
             100% {background-position: 0 0;}
         }
 
-        #fulloptions{
+        .fulloptions{
             width:35dvw;
             height:9dvh;
             border-radius:15px;
@@ -1028,6 +1045,26 @@
             border-bottom:gray solid 1px;
         }
 
+        #tripfulloption1 {
+            border-bottom:gray solid 1px;
+        }
+
+
+        #tripoptionbutton{
+            position:fixed;
+            top:10px;
+            left: 5px;
+            background: none;
+            border:none;
+            outline:none;
+            color:white;
+            display:flex;
+            align-items: center;
+            justify-content: center;
+            z-index:9;
+            transform: scale(1);
+            transition: 0.5s;
+        }
     </style>
 </head>
 <body>
@@ -1055,12 +1092,12 @@
         <input id="triptitelinput" type="text" placeholder="Titel" maxlength="15">
         <div class="lblinpt"><label>From</label><input id="tripdateinput" type="date" placeholder="start date"></div>
         <div class="lblinpt"><label>To</label><input id="tripdateinput2" type="date" placeholder="end date"></div>
-        <button id="addbutton" onclick="addtrip()">add trip</button>
+        <button id="tripaddbutton" onclick="addtrip()">add trip</button>
     </div>
     <div id="fullimagepopup">
         <button id="fullclosebutton" onclick="closefull()"><svg onclick="closefull()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M504.6 148.5C515.9 134.9 514.1 114.7 500.5 103.4C486.9 92.1 466.7 93.9 455.4 107.5L320 270L184.6 107.5C173.3 93.9 153.1 92.1 139.5 103.4C125.9 114.7 124.1 134.9 135.4 148.5L278.3 320L135.4 491.5C124.1 505.1 125.9 525.3 139.5 536.6C153.1 547.9 173.3 546.1 184.6 532.5L320 370L455.4 532.5C466.7 546.1 486.9 547.9 500.5 536.6C514.1 525.3 515.9 505.1 504.6 491.5L361.7 320L504.6 148.5z"/></svg></button>
         <button id="fulldeletebutton"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M320 208C289.1 208 264 182.9 264 152C264 121.1 289.1 96 320 96C350.9 96 376 121.1 376 152C376 182.9 350.9 208 320 208zM320 432C350.9 432 376 457.1 376 488C376 518.9 350.9 544 320 544C289.1 544 264 518.9 264 488C264 457.1 289.1 432 320 432zM376 320C376 350.9 350.9 376 320 376C289.1 376 264 350.9 264 320C264 289.1 289.1 264 320 264C350.9 264 376 289.1 376 320z"/></svg></button>
-        <div id="fulloptions">
+        <div id="fulloptions" class="fulloptions">
             <div class="fulloption" id="fulloption1">Edit Image</div>
             <div class="fulloption" id="fulloption2">Delete Image</div>
         </div>
@@ -1086,6 +1123,11 @@
     </div>
     <div id="tripviewer">
         <button class="tripclosebutton" onclick="closetrip()"><svg onclick="closetrip()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M504.6 148.5C515.9 134.9 514.1 114.7 500.5 103.4C486.9 92.1 466.7 93.9 455.4 107.5L320 270L184.6 107.5C173.3 93.9 153.1 92.1 139.5 103.4C125.9 114.7 124.1 134.9 135.4 148.5L278.3 320L135.4 491.5C124.1 505.1 125.9 525.3 139.5 536.6C153.1 547.9 173.3 546.1 184.6 532.5L320 370L455.4 532.5C466.7 546.1 486.9 547.9 500.5 536.6C514.1 525.3 515.9 505.1 504.6 491.5L361.7 320L504.6 148.5z"/></svg></button>
+        <button id="tripoptionbutton"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M320 208C289.1 208 264 182.9 264 152C264 121.1 289.1 96 320 96C350.9 96 376 121.1 376 152C376 182.9 350.9 208 320 208zM320 432C350.9 432 376 457.1 376 488C376 518.9 350.9 544 320 544C289.1 544 264 518.9 264 488C264 457.1 289.1 432 320 432zM376 320C376 350.9 350.9 376 320 376C289.1 376 264 350.9 264 320C264 289.1 289.1 264 320 264C350.9 264 376 289.1 376 320z"/></svg></button>
+        <div id="tripfulloptions" class="fulloptions">
+            <div class="fulloption" id="tripfulloption1">Edit Trip</div>
+            <div class="fulloption" id="tripfulloption2">Delete Trip</div>
+        </div>
         <div id="tripscroll" onscroll="opwelkegescrollt()">
         </div>
     </div>
@@ -1368,6 +1410,11 @@ function chooseloca(){
     document.getElementById('add').style.display = "none";
     document.getElementById('gallery').style.display = "none";
     document.getElementById('trips').style.display = "none";
+    document.getElementById('profile').style.display = "none";
+    document.getElementById("fullimagepopup").classList.remove("active");
+    document.getElementById("tripviewer").classList.remove("active");
+
+    document.getElementById('navpill').style.display = "none";
 }
 
 map.on('click', function(e){
@@ -1378,6 +1425,7 @@ map.on('click', function(e){
         document.getElementById('latinput').value = gekliktelat;
         document.getElementById('longinput').value = gekliktelng;
 
+        document.getElementById('navpill').style.display = "flex";
         document.getElementById('add').style.display = "flex";
         locationpicker = 0;
     }
@@ -1588,6 +1636,23 @@ if(parseFloat(gesorteerd[i].trip) === wtrip){
     
     document.getElementById(`tripdata${hoeveelstevantrip}`).scrollTop = 0;
     }
+    }
+    document.getElementById("tripoptionbutton").onclick = function() {
+        if(fulloptionsopen === 0){
+            document.getElementById("tripfulloptions").style.display = "flex";
+            fulloptionsopen = 1;
+        } else {
+            document.getElementById("tripfulloptions").style.display = "none";
+            fulloptionsopen = 0;
+        }
+    }
+
+    document.getElementById("tripfulloption1").onclick = function() {
+        edittrip(wtrip);
+    }
+
+    document.getElementById("tripfulloption2").onclick = function() {
+        deletetrip(wtrip);
     }
     if(document.getElementById("tripscroll").innerHTML === ""){
         alert("no images for this trip");
@@ -1806,10 +1871,10 @@ function opwelkegescrollt(){
     if(welkefoto != recentefoto){
         var scrollfotoloca = document.getElementById(`tripimgcoord${welkefoto + 1}`);
 
-        var coordnrpunt = map.project([scrollfotoloca.dataset.lat, scrollfotoloca.dataset.lng], 11);
+        var coordnrpunt = map.project([scrollfotoloca.dataset.lat, scrollfotoloca.dataset.lng], 14);
         coordnrpunt.y += panhoogte;
-        var puntnrcoord = map.unproject(coordnrpunt,11);
-        map.flyTo(puntnrcoord, 11, {animate:true, duration:1.5});
+        var puntnrcoord = map.unproject(coordnrpunt,14);
+        map.flyTo(puntnrcoord, 14, {animate:true, duration:3.5});
 
         recentefoto = welkefoto;
     }
@@ -1935,6 +2000,41 @@ function galleryfullpopup(hvl){
 
     document.getElementById('imgdata').scrollTop = 0;
     document.getElementById("fullimagepopup").classList.add("active");
+}
+
+
+function edittrip(i) {
+    document.getElementById('triptitelinput').value = loadedtrips[i].titel;
+    document.getElementById('tripdateinput').value = loadedtrips[i].date1;
+    document.getElementById('tripdateinput2').value = loadedtrips[i].date2;
+    document.getElementById('tripaddbutton').innerHTML = "Save settings";
+
+    document.getElementById('tripaddbutton').onclick = async function() {
+        loadedtrips[i].titel = document.getElementById('triptitelinput').value;
+        loadedtrips[i].date1 = document.getElementById('tripdateinput').value;
+        loadedtrips[i].date2 = document.getElementById('tripdateinput2').value;
+
+        var fotonieuw = document.getElementById('tripurlinput').files[0];
+        if (fotonieuw) {
+            loadedtrips[i].cover = fotonieuw;
+        }
+
+        await localforage.setItem('my_trips', loadedtrips);
+        document.getElementById("addtrip").style.display = "none";
+        location.reload();
+    }
+
+    document.getElementById("addtrip").style.display = "flex";
+}
+
+async function deletetrip(hvl){
+    if (confirm("Remove trip?")){
+        loadedtrips.splice(hvl, 1);
+
+        await localforage.setItem('my_trips', loadedtrips);
+
+        location.reload();
+    }
 }
     </script>
 </body>
