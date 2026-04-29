@@ -15,7 +15,6 @@
      <script src="https://cdn.jsdelivr.net/npm/leaflet-double-touch-drag-zoom@1.0.0/dist/leaflet-double-touch-drag-zoom.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/exifreader/dist/exif-reader.min.js"></script>
     <title>fotomap</title>
     <style>
         body{
@@ -36,10 +35,10 @@
         }
         .add{
             width:95dvw;
-            height:84.5dvh;
+            height:76dvh;
             position: fixed;
             left:50%;
-            top:1%;
+            top:6dvh;
             transform: translate(-50%, 0%);
             display:none;
             flex-direction:column;
@@ -1078,6 +1077,11 @@
             transform: scale(1);
             transition: 0.5s;
         }
+
+        .input-error {
+            border: 2px solid rgb(249, 54, 54) !important;
+            transition: border 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -1223,6 +1227,20 @@ function addimage() {
  var ndate = document.getElementById('dateinput').value;
  var ntrip = document.getElementById('tripselect').value;
 
+ const inputs = document.querySelectorAll('#add input, #add textarea, #add select');
+ let allesIngevuld = true;
+
+ inputs.forEach(input => {
+ if (input.value.trim() === "" || (input.type === "file" && input.files.length === 0)) {
+        input.classList.add('input-error');
+        allesIngevuld = false;
+ } else {
+        input.classList.remove('input-error');
+ }
+});
+
+if(allesIngevuld === false){return;}
+
  var niewemarker = {
         lat: nlat,
         lng: nlong,
@@ -1234,7 +1252,7 @@ function addimage() {
  }
 
 loadedmarkers.push(niewemarker);
-
+console.log(loadedmarkers.length);
 saveimage(nlat, nlong, imageFile, ntitel, ndescr, ndate, ntrip);
 
 var ncircle = L.divIcon({
@@ -1257,13 +1275,7 @@ var ncircle = L.divIcon({
                 document.getElementById("imgdate").innerHTML = ndate;
                 document.getElementById("imagepopup").style.display = "flex";
                 document.getElementById("imagepopup").onclick = function() {
-                    getfullpopup(loadedmarkers.length - 1);
-                };
-            });
-            markers.addLayer(marker);
-
-document.getElementById("imagepopup").onclick = function () {
-    document.getElementById("fullpopupimg").src = imageUrl;
+                    document.getElementById("fullpopupimg").src = imageUrl;
     document.getElementById("fullpopupimg").style.backgroundSize = "contain";
     document.getElementById("fullpopupimg").style.backgroundRepeat = "no-repeat";
 
@@ -1279,7 +1291,11 @@ document.getElementById("imagepopup").onclick = function () {
 
     document.getElementById("fullimagepopup").style.display = "flex";
     document.getElementById('imgdata').scrollTop = 0;
-};
+                    getfullpopup();
+                };
+            });
+            markers.addLayer(marker);
+
 
 document.getElementById('add').style.display = 'none';
 map.setView([nlat, nlong], 13);
@@ -1323,7 +1339,7 @@ async function saveimage(lat, lng, file, titel, description, date, trip) {
 let loadedmarkers;
 
 async function loadimage() {
-
+    console.log("load start");
     let savedMarkers = await localforage.getItem('my_markers') || [];
     loadedmarkers = savedMarkers;
 
@@ -1347,7 +1363,9 @@ async function loadimage() {
             };
             getpopup(i);
         });
-        markers.addLayer(marker);
+        if(savedMarkers[i].lat && savedMarkers[i].lng){
+            markers.addLayer(marker);
+        }
 
         var el = document.createElement("img");
         el.className = "galleryimg";
@@ -1370,6 +1388,13 @@ function closeadd() {
         document.getElementById("descrinput").value =  "";
         document.getElementById("latinput").value =  "";
         document.getElementById("longinput").value =  "";
+
+         const inputs = document.querySelectorAll('#add input, #add textarea, #add select');
+         let allesIngevuld = true;
+
+        inputs.forEach(input => {
+            input.classList.remove('input-error');
+        });
 
         document.getElementById('add').style.display = 'flex';
         addzichtbaar = 1;
@@ -1489,7 +1514,6 @@ function getpopup(hvl){
     };
     popupopen = 1;
 
-
     document.getElementById("fullpopupimg").src = imgg;
     document.getElementById("fullpopupimg").style.backgroundSize = "contain";
     document.getElementById("fullpopupimg").style.backgroundRepeat = "no-repeat";
@@ -1559,7 +1583,7 @@ function trips(){
     document.getElementById("svgprofile").style.fill = "white";
 }
 
-function getfullpopup(hvl){
+function getfullpopup(){
     document.getElementById("fullimagepopup").classList.add("active");
 }
 
@@ -1787,6 +1811,19 @@ function addtrip() {
        document.getElementById('tripurlbutton').style.color = "white";
        return;
     }
+     const inputs = document.querySelectorAll('#addtrip input, #addtrip textarea, #addtrip select');
+     let allesIngevuld = true;
+
+     inputs.forEach(input => {
+     if (input.value.trim() === "" || (input.type === "file" && input.files.length === 0)) {
+            input.classList.add('input-error');
+            allesIngevuld = false;
+     } else {
+            input.classList.remove('input-error');
+     }
+     });
+
+     if(allesIngevuld === false){return;}
     tripcovers[tripcovers.length] = imageFile;
     var imageUrl = URL.createObjectURL(imageFile);
 
@@ -1946,10 +1983,28 @@ function editimage(i){
     document.getElementById('titelinput').value = loadedmarkers[i].titel;
     document.getElementById('descrinput').value = loadedmarkers[i].description;
     document.getElementById('dateinput').value = loadedmarkers[i].date;
+    document.getElementById('urlinput').value = "";
     document.getElementById('tripselect').value = loadedmarkers[i].trip;
     document.getElementById('addbutton').value = "Save settings";
 
     document.getElementById('addbutton').onclick = async function() {
+         const inputs = document.querySelectorAll('#add input, #add textarea, #add select');
+         let allesIngevulds = true;
+
+        inputs.forEach(input => {
+         if (input.value.trim() === "" || (input.type === "file" && input.files.length === 0)) {
+            if(input.id != "urlinput"){
+                input.classList.add('input-error');
+                allesIngevulds = false;
+                console.log(input);
+            }
+         } else {
+                input.classList.remove('input-error');
+         }
+        });
+
+        if(allesIngevulds === false){return;}
+
         loadedmarkers[i].lat = parseFloat(document.getElementById('latinput').value);
         loadedmarkers[i].lng = parseFloat(document.getElementById('longinput').value);
         loadedmarkers[i].titel = document.getElementById('titelinput').value;
@@ -2024,9 +2079,27 @@ function edittrip(i) {
     document.getElementById('triptitelinput').value = loadedtrips[i].titel;
     document.getElementById('tripdateinput').value = loadedtrips[i].date1;
     document.getElementById('tripdateinput2').value = loadedtrips[i].date2;
+    document.getElementById('tripurlinput').value = "";
     document.getElementById('tripaddbutton').innerHTML = "Save settings";
 
     document.getElementById('tripaddbutton').onclick = async function() {
+        const inputs = document.querySelectorAll('#addtrip input, #addtrip textarea');
+         let allesIngevuldz = true;
+
+        inputs.forEach(input => {
+         if (input.value.trim() === "" || (input.type === "file" && input.files.length === 0)) {
+            if(input.id != "tripurlinput"){
+                input.classList.add('input-error');
+                allesIngevuldz = false;
+                console.log(input);
+            }
+         } else {
+                input.classList.remove('input-error');
+         }
+        });
+
+        if(allesIngevuldz === false){return;}
+
         loadedtrips[i].titel = document.getElementById('triptitelinput').value;
         loadedtrips[i].date1 = document.getElementById('tripdateinput').value;
         loadedtrips[i].date2 = document.getElementById('tripdateinput2').value;
@@ -2053,6 +2126,7 @@ async function deletetrip(hvl){
         location.reload();
     }
 }
+
     </script>
 </body>
 </html>
