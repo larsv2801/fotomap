@@ -21,6 +21,12 @@
             "type": "image/png",
             "purpose": "maskable"
         },
+        {
+            "src": "fotomapmasklogo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+            "purpose": "monochrome maskable"
+        },
          {
             "src": "fotomaplogo144.png",
             "sizes": "144x144",
