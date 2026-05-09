@@ -34,12 +34,12 @@
     "type": "image/png"
   },
   {
-    "src": "/fotomap/cleanfotomap2.png",
+    "src": "cleanfotomap2.png",
     "sizes": "618x1055",
     "type": "image/png"
   },
   {
-    "src": "/fotomap/cleanfotomap3.png",
+    "src": "cleanfotomap3.png",
     "sizes": "621x1056",
     "type": "image/png"
   }
