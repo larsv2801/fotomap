@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
-	<link rel="manifest" href="manifest.json?v=1.0.3">
      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
      crossorigin=""/>
@@ -1206,7 +1205,7 @@ const tripdate1 = [];
 const tripdate2 = [];
 const tripcovers = [];
 
-function addimage() {
+async function addimage() {
  var imageFile = document.getElementById('urlinput').files[0];
  if(!imageFile){
     document.getElementById('add').style.display = 'flex';
@@ -1254,7 +1253,8 @@ if(allesIngevuld === false){return;}
 
 loadedmarkers.push(niewemarker);
 console.log(loadedmarkers.length);
-saveimage(nlat, nlong, imageFile, ntitel, ndescr, ndate, ntrip);
+var locatiename = await getlocaname(nlat, nlong);
+saveimage(nlat, nlong, imageFile, ntitel, ndescr, ndate, ntrip, locatiename);
 
 var ncircle = L.divIcon({
                 className: 'divicon',
@@ -1286,7 +1286,7 @@ var ncircle = L.divIcon({
     document.getElementById("blurlaag").style.backgroundRepeat = "no-repeat";
     
     document.getElementById("fullimgtitel").innerHTML = ntitel;
-    document.getElementById("fullimgdate").innerHTML = ndate;
+    document.getElementById("fullimgdate").innerHTML = datum.getDate() + " " + datum.toLocaleString("en-US", {month:"long"}) + " " + datum.getFullYear();
     document.getElementById("fullimgcoord").innerHTML = nlat.toFixed(6) + " , " + nlong.toFixed(6);
     document.getElementById("imgdiscr").innerHTML = ndescr;
 
@@ -1320,7 +1320,7 @@ document.getElementById("svgprofile").style.fill = "white";
  console.log(longs);
 }
 
-async function saveimage(lat, lng, file, titel, description, date, trip) {
+async function saveimage(lat, lng, file, titel, description, date, trip, locationname) {
 
     let savedMarkers = await localforage.getItem('my_markers') || [];
 
@@ -1331,7 +1331,8 @@ async function saveimage(lat, lng, file, titel, description, date, trip) {
         titel: titel,
         description: description,
         date: date,
-        trip: trip
+        trip: trip,
+        loca: locationname
     });
 
     await localforage.setItem('my_markers', savedMarkers);
@@ -1502,6 +1503,7 @@ function getpopup(hvl){
     var imgg = URL.createObjectURL(loadedmarkers[hvl].photo);
     var imglatt = Number(loadedmarkers[hvl].lat.toFixed(6));
     var imglngg = Number(loadedmarkers[hvl].lng.toFixed(6));
+    var imglocation = loadedmarkers[hvl].loca;
     var description = loadedmarkers[hvl].description;
     var datum = new Date(loadedmarkers[hvl].date);
 
@@ -1525,7 +1527,11 @@ function getpopup(hvl){
     document.getElementById("blurlaag").style.backgroundRepeat = "no-repeat";
     
     document.getElementById("fullimgtitel").innerHTML = titell;
-    document.getElementById("fullimgcoord").innerHTML = imglatt + " , " + imglngg;
+    if(imglocation && imglocation != undefined && imglocation != null){
+        document.getElementById("fullimgcoord").innerHTML = imglocation;
+    } else {
+        document.getElementById("fullimgcoord").innerHTML = imglatt + " , " + imglngg;
+    }
     document.getElementById("imgdiscr").innerHTML = description;
     document.getElementById("fullimgdate").innerHTML = datum.getDate() + " " + datum.toLocaleString("en-US", {month:"long"}) + " " + datum.getFullYear();
 
@@ -1642,6 +1648,7 @@ if(parseFloat(gesorteerd[i].trip) === wtrip){
     var fullimglatt = Number(gesorteerd[i].lat)
     var fullimglngg = Number(gesorteerd[i].lng)
     var datum = new Date(gesorteerd[i].date);
+    var imglocation = gesorteerd[i].loca;
     console.log(gesorteerd[i].date);
     console.log(datum);
 
@@ -1672,7 +1679,7 @@ if(parseFloat(gesorteerd[i].trip) === wtrip){
     document.getElementById(`tripblurlaag${hoeveelstevantrip}`).style.backgroundRepeat = "no-repeat";
     
     document.getElementById(`tripimgtitel${hoeveelstevantrip}`).innerHTML = titell;
-    document.getElementById(`tripimgcoord${hoeveelstevantrip}`).innerHTML = imglatt + " , " + imglngg;
+    document.getElementById(`tripimgcoord${hoeveelstevantrip}`).innerHTML = imglocation || imglatt + " , " + imglngg;
     document.getElementById(`tripdiscr${hoeveelstevantrip}`).innerHTML = description;
     document.getElementById(`tripimgdate${hoeveelstevantrip}`).innerHTML = datum.getDate() + " " + datum.toLocaleString("en-US", {month:"long"}) + " " + datum.getFullYear();
     
@@ -2034,6 +2041,7 @@ function galleryfullpopup(hvl){
     var imglngg = Number(loadedmarkers[hvl].lng.toFixed(6));
     var description = loadedmarkers[hvl].description;
     var datum = new Date(loadedmarkers[hvl].date);
+    var imglocation = loadedmarkers[hvl].loca;
 
     document.getElementById("fullpopupimg").src = imgg;
     document.getElementById("fullpopupimg").style.backgroundSize = "contain";
@@ -2045,7 +2053,11 @@ function galleryfullpopup(hvl){
     document.getElementById("blurlaag").style.backgroundRepeat = "no-repeat";
     
     document.getElementById("fullimgtitel").innerHTML = titell;
-    document.getElementById("fullimgcoord").innerHTML = imglatt + " , " + imglngg;
+    if(imglocation && imglocation != undefined && imglocation != null){
+        document.getElementById("fullimgcoord").innerHTML = imglocation;
+    } else {
+        document.getElementById("fullimgcoord").innerHTML = imglatt + " , " + imglngg;
+    }
     document.getElementById("imgdiscr").innerHTML = description;
     document.getElementById("fullimgdate").innerHTML = datum.getDate() + " " + datum.toLocaleString("en-US", {month:"long"}) + " " + datum.getFullYear();
 
@@ -2126,6 +2138,46 @@ async function deletetrip(hvl){
 
         location.reload();
     }
+}
+
+async function getlocaname(fotolat,fotolong){
+    const myHeaders = new Headers();
+myHeaders.append("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0");
+
+const requestOptions = {
+  method: "GET",
+  headers: myHeaders,
+  redirect: "follow"
+};
+
+  try{
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${fotolat}&lon=${fotolong}&layer=address`, requestOptions);
+    const result = await response.json();
+    if(result.name){
+        var extra = " ";
+        if(result.address.city){
+            var locaname = result.name + extra + result.address.city;
+        } else if(result.address.city_district){
+            var locaname = result.name + extra + result.address.city_district;
+        } else if(result.address.town){
+        var locaname = result.name + extra + result.address.town;
+        }
+    } else {
+        var extra  = " ";
+        if(result.address.city){
+            var locaname = result.address.city + extra + result.address.road;
+        } else if(result.address.city_district){
+            var locaname = result.address.city_district + extra + result.address.road;
+        } else if(result.address.town){
+        var locaname = result.address.town + extra + result.address.road;
+        }
+    }
+    console.log(locaname);
+    return locaname;
+  } catch (error) {
+    console.error("Fout bij ophalen locatie:", error);
+    return "Locatie niet gevonden";
+  }
 }
 
     </script>
