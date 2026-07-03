@@ -23,6 +23,11 @@
             transition: 2s;
         }
 
+        :root {
+            --gold-color: goldenrod; /* global scope */
+        }
+
+
         #map{
             width:100dvw;
             height:100dvh;
@@ -52,7 +57,7 @@
         }
 
         .add input[type="number"]:focus {
-            border: 1px solid goldenrod;
+            border: 1px solid var(--gold-color);
             outline:none;
         }
 
@@ -91,7 +96,7 @@
         }
 
         .add input[type="text"]:focus {
-            border: 1px solid goldenrod;
+            border: 1px solid var(--gold-color);
             outline:none;
         }
 
@@ -106,7 +111,7 @@
         }
 
         .add select:focus {
-            border: 1px solid goldenrod;
+            border: 1px solid var(--gold-color);
             outline:none;
         }
 
@@ -122,7 +127,7 @@
         }
 
         .add optien:focus {
-            border: 1px solid goldenrod;
+            border: 1px solid var(--gold-color);
             outline:none;
         }
 
@@ -139,7 +144,7 @@
         }
 
         .add textarea:focus {
-            border: 1px solid goldenrod;
+            border: 1px solid var(--gold-color);
             outline:none;
         }
 
@@ -166,7 +171,7 @@
         }
 
         .add input[type="date"]:focus {
-            border: 1px solid goldenrod;
+            border: 1px solid var(--gold-color);
             outline:none;
         }
 
@@ -188,8 +193,8 @@
 
         #locafinder {
             background: none;
-            border: 1px solid goldenrod;
-            color: goldenrod;
+            border: 1px solid var(--gold-color);
+            color: var(--gold-color);
             width: 85dvw;
             height: 5dvh;
             border-radius: 12px;
@@ -207,8 +212,8 @@
 
         #locachooser , #locagetter {
             background: none;
-            border: 1px solid goldenrod;
-            color: goldenrod;
+            border: 1px solid var(--gold-color);
+            color: var(--gold-color);
             width: 85dvw;
             height: 5dvh;
             border-radius: 12px;
@@ -228,7 +233,7 @@
             border:none;
             outline:none;
             background-color: white;
-            color: goldenrod;
+            color: var(--gold-color);
             width: 85dvw;
             height: 5dvh;
             border-radius: 12px;
@@ -244,7 +249,7 @@
             border:none;
             outline:none;
             background-color: white;
-            color: goldenrod;
+            color: var(--gold-color);
             width: 85dvw;
             height: 5dvh;
             border-radius: 12px;
@@ -264,7 +269,7 @@
           text-transform: uppercase;
           letter-spacing: 1px;
           font-size: 12px;
-          background: rgba(218, 165, 32, 0.725);
+          background: var(--gold-color);
           border: 1px solid rgba(255, 255, 255, 0.1);
           backdrop-filter: blur(10px);
           color:white;
@@ -281,7 +286,7 @@
           text-transform: uppercase;
           letter-spacing: 1px;
           font-size: 12px;
-          background: rgba(218, 165, 32, 0.725);
+          background: var(--gold-color);
           border: 1px solid rgba(255, 255, 255, 0.1);
           backdrop-filter: blur(10px);
           color:white;
@@ -381,14 +386,14 @@
         }
 
         .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
-            background: rgba(218, 165, 32, 0.507) !important;
+            background: var(--gold-color) !important;
             color: white !important;
             font-family: 'Segoe UI', Roboto, sans-serif;
             font-weight: bold;
         }
 
         #svghome{
-            fill:goldenrod;
+            fill:var(--gold-color);
         }
 
         hr{
@@ -675,8 +680,8 @@
 
         .triphr{
             width:40dvw;
-            background-color: goldenrod;
-            color:goldenrod;
+            background-color: var(--gold-color);
+            color:var(--gold-color);
             height:0.6dvh;
             border-radius: 150px;
             align-self: flex-start;
@@ -888,8 +893,8 @@
 
         #fullhr{
             width:40dvw;
-            background-color: goldenrod;
-            color:goldenrod;
+            background-color: var(--gold-color);
+            color:var(--gold-color);
             height:0.6dvh;
             border-radius: 150px;
             align-self: flex-start;
@@ -1079,6 +1084,40 @@
             border: 2px solid rgb(249, 54, 54) !important;
             transition: border 0.3s ease;
         }
+
+        #colorinputdiv{
+            height:5.5dvw;
+            width:55dvw;
+            position:relative;
+            display:flex;
+            align-items:center;
+            position:absolute;
+            left:50%;
+            top:30%;
+            transform: translate(-50%,-50%);
+        }
+
+        #colorinputtext{
+            color:white;
+        }
+
+        #colorinput{
+            height:5vw;
+            width:11vw;
+            background-color: var(--gold-color);
+            border: none;
+            outline:none;
+            border-radius:50px;
+            position:absolute;
+            display:flex;
+            align-items:center;
+            right:0%;
+            transition:0.3s;
+            user-select: none;
+            cursor:pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
     </style>
 </head>
 <body>
@@ -1159,6 +1198,10 @@
     </div>
     <div id="profile">
         <button id="deleteverything" onclick="deleteverything()">DELETE EVERYTHING</button>
+        <div id="colorinputdiv">
+            <h3 id="colorinputtext">Color</h3>
+            <input type="color" id="colorinput" value="#daa520" oninput="changecolor()">
+        </div>
     </div>
     <div id="map"></div>
 
@@ -1193,6 +1236,9 @@
 map.addLayer(markers);
 
 loadimage();
+
+var kleur = "#daa520";
+document.getElementById("colorinput").value = kleur;
 
 const urls = [];
 const longs = [];
@@ -1307,7 +1353,7 @@ var el = document.createElement("img");
 document.getElementById("gallery").appendChild(el);
 
 document.getElementById("svgplus").style.fill = "white";
-document.getElementById("svghome").style.fill = "goldenrod";
+document.getElementById("svghome").style.fill = "var(--gold-color)";
 document.getElementById("svgplane").style.fill = "white";
 document.getElementById("svgimg").style.fill = "white";
 document.getElementById("svgprofile").style.fill = "white";
@@ -1397,7 +1443,7 @@ function closeadd() {
 
         document.getElementById('add').style.display = 'flex';
         addzichtbaar = 1;
-        document.getElementById("svgplus").style.fill = "goldenrod";
+        document.getElementById("svgplus").style.fill = "var(--gold-color)";
         document.getElementById("svghome").style.fill = "white";
         document.getElementById("svgplane").style.fill = "white";
         document.getElementById("svgimg").style.fill = "white";
@@ -1408,7 +1454,7 @@ function closeadd() {
         document.getElementById('add').style.display = 'none';
         addzichtbaar = 0;
         document.getElementById("svgplus").style.fill = "white";
-        document.getElementById("svghome").style.fill = "goldenrod";
+        document.getElementById("svghome").style.fill = "var(--gold-color)";
         document.getElementById("svgplane").style.fill = "white";
         document.getElementById("svgimg").style.fill = "white";
         document.getElementById("svgprofile").style.fill = "white";
@@ -1431,7 +1477,7 @@ function home(){
         document.getElementById("profile").style.display = "none";
         addzichtbaar = 0;
         document.getElementById("svgplus").style.fill = "white";
-        document.getElementById("svghome").style.fill = "goldenrod";
+        document.getElementById("svghome").style.fill = "var(--gold-color)";
         document.getElementById("svgplane").style.fill = "white";
         document.getElementById("svgimg").style.fill = "white";
         document.getElementById("svgprofile").style.fill = "white";
@@ -1568,7 +1614,7 @@ function gallery(){
     document.getElementById("svgplus").style.fill = "white";
     document.getElementById("svghome").style.fill = "white";
     document.getElementById("svgplane").style.fill = "white";
-    document.getElementById("svgimg").style.fill = "goldenrod";
+    document.getElementById("svgimg").style.fill = "var(--gold-color)";
     document.getElementById("svgprofile").style.fill = "white";
 }
 
@@ -1582,7 +1628,7 @@ function trips(){
 
     document.getElementById("svgplus").style.fill = "white";
     document.getElementById("svghome").style.fill = "white";
-    document.getElementById("svgplane").style.fill = "goldenrod";
+    document.getElementById("svgplane").style.fill = "var(--gold-color)";
     document.getElementById("svgimg").style.fill = "white";
     document.getElementById("svgprofile").style.fill = "white";
 }
@@ -1603,7 +1649,7 @@ function viewonmap(hvl) {
     document.getElementById("profile").style.display = "none";
 
     document.getElementById("svgplus").style.fill = "white";
-    document.getElementById("svghome").style.fill = "goldenrod";
+    document.getElementById("svghome").style.fill = "var(--gold-color)";
     document.getElementById("svgplane").style.fill = "white";
     document.getElementById("svgimg").style.fill = "white";
     document.getElementById("svgprofile").style.fill = "white";
@@ -1624,7 +1670,7 @@ function gettripimages(wtrip){
     document.getElementById("profile").style.display = "none";
 
     document.getElementById("svgplus").style.fill = "white";
-    document.getElementById("svghome").style.fill = "goldenrod";
+    document.getElementById("svghome").style.fill = "var(--gold-color)";
     document.getElementById("svgplane").style.fill = "white";
     document.getElementById("svgimg").style.fill = "white";
     document.getElementById("svgprofile").style.fill = "white";
@@ -1703,7 +1749,7 @@ if(parseFloat(gesorteerd[i].trip) === wtrip){
     if(document.getElementById("tripscroll").innerHTML === ""){
         alert("no images for this trip");
         document.getElementById("trips").style.display = "flex";
-        document.getElementById('svgplane').style.fill = "goldenrod";
+        document.getElementById('svgplane').style.fill = "var(--gold-color)";
         document.getElementById('svghome').style.fill = "white";
         return;
     }
@@ -1799,7 +1845,7 @@ function closetrip() {
     document.getElementById("profile").style.display = "none";
 
     document.getElementById("svgplus").style.fill = "white";
-    document.getElementById("svghome").style.fill = "goldenrod";
+    document.getElementById("svghome").style.fill = "var(--gold-color)";
     document.getElementById("svgplane").style.fill = "white";
     document.getElementById("svgimg").style.fill = "white";
     document.getElementById("svgprofile").style.fill = "white"; 
@@ -1961,7 +2007,7 @@ function openprofile(){
     document.getElementById("svghome").style.fill = "white";
     document.getElementById("svgplane").style.fill = "white";
     document.getElementById("svgimg").style.fill = "white";
-    document.getElementById("svgprofile").style.fill = "goldenrod"; 
+    document.getElementById("svgprofile").style.fill = "var(--gold-color)"; 
 }
 
 function deleteverything() {
@@ -2176,6 +2222,24 @@ const requestOptions = {
     return "Locatie niet gevonden";
   }
 }
+
+function changecolor(){
+    kleur = document.getElementById("colorinput").value;
+    document.querySelector(':root').style.setProperty('--gold-color', kleur);
+    localStorage.setItem("kleur", kleur);
+}
+
+function loadcolor(){
+    kleur = localStorage.getItem("kleur");
+    if(kleur){
+        document.querySelector(':root').style.setProperty('--gold-color', kleur);
+        document.getElementById("colorinput").value = kleur;
+    } else {
+        kleur = "goldenrod";
+    }
+}
+
+loadcolor();
 
     </script>
 </body>
