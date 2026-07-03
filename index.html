@@ -1095,6 +1095,7 @@
             left:50%;
             top:30%;
             transform: translate(-50%,-50%);
+            user-select: none;
         }
 
         #colorinputtext{
@@ -1116,6 +1117,24 @@
             user-select: none;
             cursor:pointer;
             -webkit-tap-highlight-color: transparent;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+	        padding: 0;
+        }
+
+        input[type="color"] {
+            border:none;
+            outline:none;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+	        border: none;
+            outline:none;
+        }
+
+        #colorinput::-moz-color-swatch {
+            border: 0;
         }
 
     </style>
