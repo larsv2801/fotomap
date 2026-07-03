@@ -1348,6 +1348,7 @@ var ncircle = L.divIcon({
     document.getElementById("blurlaag").style.backgroundRepeat = "no-repeat";
     
     document.getElementById("fullimgtitel").innerHTML = ntitel;
+    var datum = new Date(ndate);
     document.getElementById("fullimgdate").innerHTML = datum.getDate() + " " + datum.toLocaleString("en-US", {month:"long"}) + " " + datum.getFullYear();
     document.getElementById("fullimgcoord").innerHTML = nlat.toFixed(6) + " , " + nlong.toFixed(6);
     document.getElementById("imgdiscr").innerHTML = ndescr;
@@ -1793,6 +1794,7 @@ hammer.on("swipeleft", () => {
   var jef = momentelehvl + 1;
   console.log("jef is " + jef);
   console.log("momentele hvl is " + momentelehvl);
+  document.getElementById("imagepopup").focus();
   if(loadedmarkers[jef]){
     var jeflat = loadedmarkers[jef].lat;
     var jeflng = loadedmarkers[jef].lng;
@@ -1813,6 +1815,7 @@ hammer.on("swiperight", () => {
   var jef = momentelehvl - 1;
   console.log("jef is " + jef);
   console.log("momentele hvl is " + momentelehvl);
+  document.getElementById("imagepopup").focus();
   if(loadedmarkers[jef]){
     var jeflat = loadedmarkers[jef].lat;
     var jeflng = loadedmarkers[jef].lng;
