@@ -337,7 +337,7 @@
 
         #navpill {
             width:50dvw;
-            height:7dvh;
+            height:6dvh;
             border-radius:50px;
             background: rgba(46, 46, 46, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -346,7 +346,7 @@
             gap:3.5dvw;
             z-index:3;
             position:fixed;
-            bottom:15px;
+            bottom:17px;
             left:50%;
             transform: translate(-50%,0%);
             align-items: center;
@@ -461,7 +461,8 @@
             background-color: #222222;
             margin:0;
             padding:4dvw;
-            height: calc(100dvh - 4dvw - 22dvw);
+            padding-top:8dvw;
+            height: calc(100dvh - 8dvw - 22dvw);
             width: 92dvw;
             flex-wrap:wrap;
             gap:6dvw;
@@ -488,7 +489,7 @@
             background-color: #222222;
             margin:0;
             padding:4dvw;
-            height: calc(100dvh - 4dvw - 22dvw);
+            height: calc(100dvh - 7dvh - 22dvw);
             width: 92dvw;
             flex-direction: column;
             gap:6dvw;
@@ -496,7 +497,7 @@
             overflow:auto;
             padding-bottom: 22dvw;
             align-items: center;
-            padding-top:5dvh;
+            padding-top:7dvh;
         }
 
         .trip{
@@ -863,7 +864,7 @@
 
         #fullclosebutton{
             position:fixed;
-            top:10px;
+            top:20px;
             right: 10px;
             background: none;
             border:none;
@@ -877,7 +878,7 @@
 
         #fulldeletebutton{
             position:fixed;
-            top:10px;
+            top:20px;
             left: 5px;
             background: none;
             border:none;
@@ -953,7 +954,7 @@
 
         #addtripbutton{
             position:absolute;
-            top:10px;
+            top:25px;
             right: 10px;
             background: none;
             border:none;
@@ -973,6 +974,7 @@
             left:0;
             padding:0;
             margin:0;
+            overflow:hidden;
         }
 
         #deleteverything{
@@ -1137,6 +1139,64 @@
             border: 0;
         }
 
+        #areyousure{
+            width:85dvw;
+            height:15dvh;
+            display:none;
+            position:relative;
+            top:50%;
+            left:50%;
+            transform: translate(-50%,-50%);
+           background: rgba(46, 46, 46, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 25px;
+            z-index:99;
+            color:white;
+            flex-direction:column;
+            user-select: none;
+        }
+
+        #areyousure h1{
+            font-size:6.7dvw;
+            margin:none;
+            padding:none;
+            display:flex;
+            margin-left:3dvw;
+            margin-top:2dvw;
+            user-select: none;
+        }
+
+        #areyousure button{
+            background-color:transparent;
+            border:none;
+            outline:none;
+            padding:none;
+            margin:none;
+            font-size:4dvw;
+            cursor:pointer;
+            user-select: none;
+        }
+
+        #notsure{
+            position:fixed;
+            width:25dvw;
+            left:2dvw;
+            bottom:5dvw;
+            text-align:left;
+            color:white;
+        }
+
+        #sure{
+            position:fixed;
+            width:65dvw;
+            right:2dvw;
+            bottom:5dvw;
+            color:rgb(255, 65, 65);
+            text-align:right;
+        }
+
     </style>
 </head>
 <body>
@@ -1216,7 +1276,12 @@
         <button onclick="openprofile()"><svg id="svgprofile" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M463 448.2C440.9 409.8 399.4 384 352 384L288 384C240.6 384 199.1 409.8 177 448.2C212.2 487.4 263.2 512 320 512C376.8 512 427.8 487.3 463 448.2zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 336C359.8 336 392 303.8 392 264C392 224.2 359.8 192 320 192C280.2 192 248 224.2 248 264C248 303.8 280.2 336 320 336z"/></svg></button>
     </div>
     <div id="profile">
-        <button id="deleteverything" onclick="deleteverything()">DELETE EVERYTHING</button>
+        <div id="areyousure">
+            <h1>Are you sure?</h1>
+            <button id="notsure" onclick="document.getElementById('areyousure').style.display = 'none';">No, cancel</button>
+            <button id="sure" onclick="deleteverything()">Yes, delete everything</button>
+        </div>
+        <button id="deleteverything" onclick="document.getElementById('areyousure').style.display = 'flex';">DELETE EVERYTHING</button>
         <div id="colorinputdiv">
             <h3 id="colorinputtext">Color</h3>
             <input type="color" id="colorinput" value="#daa520" oninput="changecolor()">
@@ -2033,20 +2098,16 @@ function openprofile(){
 }
 
 function deleteverything() {
-    if(confirm("Are you sure? \nyou are goint to delete everything.")){
-        if(confirm("Are you REALLY sure?")){
-            if(confirm("LAST CHANCE, YOU ARE GOING TO DELETE EVERYTHING!")){
-                document.getElementById("deleteverything").innerHTML = "DELETING EVERYTHING...";
-                document.getElementById("deleteverything").style.pointerEvents = "none";
-                setTimeout(function () {
-                        localforage.clear();
-                        document.body.innerHTML = "";
-                        document.body.style.backgroundColor = "white";
-                        setTimeout(() => location.reload(), 10000);
-                }, 1000);
-            }
-        }
-    }
+    document.getElementById("areyousure").style.display = "none";
+    document.getElementById("deleteverything").innerHTML = "DELETING EVERYTHING...";
+    document.getElementById("deleteverything").style.pointerEvents = "none";
+    setTimeout(function () {
+            localforage.clear();
+            localStorage.clear();
+            document.body.innerHTML = "";
+            document.body.style.backgroundColor = "white";
+            setTimeout(() => location.reload(), 10000);
+    }, 1000);
 }
 
 function editimage(i){
