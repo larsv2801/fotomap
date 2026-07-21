@@ -776,6 +776,49 @@
             box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.225);
         }
 
+        #fullscreendiv{
+           width: fit-content;
+           height: fit-content;
+           display:none;
+           position:fixed;
+           z-index:9999;
+           left:50%;
+           top:50%;
+           transform: translate(-50%,-50%);
+           margin:0;
+           padding:0;
+        }
+
+        #fullscreenimg{
+            max-width: 95dvw;
+            max-height: 95dvh;
+            object-fit: contain;
+            border:none;
+            outline:none;
+            padding:0;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.225);
+            display:flex;
+            z-index:999;
+            /*position:absolute;
+            left:50%;
+            top:50%;
+            transform: translate(-50%,-50%);*/
+            border-radius: 10px;
+            display:flex;
+            z-index:7;
+        }
+
+        #fullscreenclose{
+            position:absolute;
+            right:2dvw;
+            top:2dvw;
+            background-color:transparent;
+            border:none;
+            outline:none;
+            display:flex;
+            z-index:9;
+        }
+
         #imgdata{
             width:calc(100% - 5dvw);
             height:30dvh;
@@ -1143,7 +1186,7 @@
             width:85dvw;
             height:15dvh;
             display:none;
-            position:relative;
+            position:fixed;
             top:50%;
             left:50%;
             transform: translate(-50%,-50%);
@@ -1197,6 +1240,78 @@
             text-align:right;
         }
 
+        #triperror{
+            width:85dvw;
+            height:16dvh;
+            display:none;
+            position:fixed;
+            top:50%;
+            left:50%;
+            transform: translate(-50%,-50%);
+           background: rgba(46, 46, 46, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 25px;
+            z-index:99;
+            color:white;
+            flex-direction:column;
+            user-select: none;
+        }
+
+        #triperror h1{
+            font-size:3.7dvw;
+            margin:none;
+            padding:none;
+            display:flex;
+            margin-left:3dvw;
+            margin-top:2dvw;
+            user-select: none;
+        }
+
+        #triperror button{
+            background-color:transparent;
+            border:none;
+            outline:none;
+            padding:none;
+            margin:none;
+            font-size:4dvw;
+            cursor:pointer;
+            user-select: none;
+        }
+
+        #notsuretrip{
+            position:fixed;
+            width:25dvw;
+            left:2dvw;
+            bottom:4dvw;
+            text-align:center;
+            color:white;
+        }
+
+        #edittrip{
+            display:flex;
+            justify-content: center;
+            margin:0;
+            padding:0;
+            position:fixed;
+            width:25dvw;
+            left:50%;
+            bottom:4dvw;
+            transform: translate(-50%,0%);
+            color:rgb(255, 189, 65);
+            text-align:center;
+        }
+
+        #suretrip{
+            position:fixed;
+            width:25dvw;
+            right:2dvw;
+            bottom:4dvw;
+            color:rgb(255, 65, 65);
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
@@ -1228,6 +1343,21 @@
         <div class="lblinpt"><label>To</label><input id="tripdateinput2" type="date" placeholder="end date"></div>
         <button id="tripaddbutton" onclick="addtrip()">add trip</button>
     </div>
+    <div id="areyousure">
+            <h1>Are you sure?</h1>
+            <button id="notsure" onclick="document.getElementById('areyousure').style.display = 'none';">No, cancel</button>
+            <button id="sure">Yes, delete</button>
+    </div>
+    <div id="triperror">
+            <h1>No images for this trip, what do you want to do?</h1>
+            <button id="notsuretrip" onclick="document.getElementById('triperror').style.display = 'none';">Cancel</button>
+            <button id="edittrip" >Edit trip</button>
+            <button id="suretrip" >Delete trip</button>
+    </div>
+    <div id="fullscreendiv">
+            <button id="fullscreenclose" onclick="closefullscreen()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M504.6 148.5C515.9 134.9 514.1 114.7 500.5 103.4C486.9 92.1 466.7 93.9 455.4 107.5L320 270L184.6 107.5C173.3 93.9 153.1 92.1 139.5 103.4C125.9 114.7 124.1 134.9 135.4 148.5L278.3 320L135.4 491.5C124.1 505.1 125.9 525.3 139.5 536.6C153.1 547.9 173.3 546.1 184.6 532.5L320 370L455.4 532.5C466.7 546.1 486.9 547.9 500.5 536.6C514.1 525.3 515.9 505.1 504.6 491.5L361.7 320L504.6 148.5z"/></svg></button>
+            <img src="https://mp.reshift.nl/zoom/E84BF5C742544C5D9CE6569542999A05-canada.jpg" id="fullscreenimg">
+    </div>
     <div id="fullimagepopup">
         <button id="fullclosebutton" onclick="closefull()"><svg onclick="closefull()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M504.6 148.5C515.9 134.9 514.1 114.7 500.5 103.4C486.9 92.1 466.7 93.9 455.4 107.5L320 270L184.6 107.5C173.3 93.9 153.1 92.1 139.5 103.4C125.9 114.7 124.1 134.9 135.4 148.5L278.3 320L135.4 491.5C124.1 505.1 125.9 525.3 139.5 536.6C153.1 547.9 173.3 546.1 184.6 532.5L320 370L455.4 532.5C466.7 546.1 486.9 547.9 500.5 536.6C514.1 525.3 515.9 505.1 504.6 491.5L361.7 320L504.6 148.5z"/></svg></button>
         <button id="fulldeletebutton"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M320 208C289.1 208 264 182.9 264 152C264 121.1 289.1 96 320 96C350.9 96 376 121.1 376 152C376 182.9 350.9 208 320 208zM320 432C350.9 432 376 457.1 376 488C376 518.9 350.9 544 320 544C289.1 544 264 518.9 264 488C264 457.1 289.1 432 320 432zM376 320C376 350.9 350.9 376 320 376C289.1 376 264 350.9 264 320C264 289.1 289.1 264 320 264C350.9 264 376 289.1 376 320z"/></svg></button>
@@ -1237,7 +1367,7 @@
         </div>
         <div id="blurlaag"></div>
         <div id="fullimgcontainer">
-            <img id="fullpopupimg" src="">
+            <img id="fullpopupimg" src="" onclick="fullscreenimg()">
             <button id="fullmapview"><p>view on map</p></button>
         </div>
         <div id="imgdata">
@@ -1276,12 +1406,7 @@
         <button onclick="openprofile()"><svg id="svgprofile" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M463 448.2C440.9 409.8 399.4 384 352 384L288 384C240.6 384 199.1 409.8 177 448.2C212.2 487.4 263.2 512 320 512C376.8 512 427.8 487.3 463 448.2zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 336C359.8 336 392 303.8 392 264C392 224.2 359.8 192 320 192C280.2 192 248 224.2 248 264C248 303.8 280.2 336 320 336z"/></svg></button>
     </div>
     <div id="profile">
-        <div id="areyousure">
-            <h1>Are you sure?</h1>
-            <button id="notsure" onclick="document.getElementById('areyousure').style.display = 'none';">No, cancel</button>
-            <button id="sure" onclick="deleteverything()">Yes, delete everything</button>
-        </div>
-        <button id="deleteverything" onclick="document.getElementById('areyousure').style.display = 'flex';">DELETE EVERYTHING</button>
+        <button id="deleteverything" onclick="document.getElementById('areyousure').style.display = 'flex';document.getElementById('sure').onclick = function(){deleteverything();}">DELETE EVERYTHING</button>
         <div id="colorinputdiv">
             <h3 id="colorinputtext">Color</h3>
             <input type="color" id="colorinput" value="#daa520" oninput="changecolor()">
@@ -1419,6 +1544,28 @@ var ncircle = L.divIcon({
     document.getElementById("imgdiscr").innerHTML = ndescr;
 
     document.getElementById("fullimagepopup").style.display = "flex";
+
+document.getElementById("fulldeletebutton").onclick = function() {
+        if(fulloptionsopen === 0){
+            document.getElementById("fulloptions").style.display = "flex";
+            fulloptionsopen = 1;
+        } else {
+            document.getElementById("fulloptions").style.display = "none";
+            fulloptionsopen = 0;
+        }
+    }
+
+    document.getElementById("fulloption1").onclick = function() {
+        editimage(momentelehvl);
+    }
+
+    document.getElementById("fulloption2").onclick = function() {
+        document.getElementById('areyousure').style.display = 'flex';
+        document.getElementById('sure').onclick = function() {
+            deleteimage(momentelehvl);
+        }
+    }
+
     document.getElementById('imgdata').scrollTop = 0;
                     getfullpopup();
                 };
@@ -1533,6 +1680,8 @@ function closeadd() {
         document.getElementById("svgplane").style.fill = "white";
         document.getElementById("svgimg").style.fill = "white";
         document.getElementById("svgprofile").style.fill = "white";
+        document.getElementById("triperror").style.display = "none";
+        document.getElementById("areyousure").style.display = "none";
         /*document.getElementById("imagepopup").style.display = "none";
         document.getElementById("gallery").style.display = "none";*/
     } else {
@@ -1560,6 +1709,8 @@ function home(){
         document.getElementById('gallery').style.display = 'none';
         document.getElementById('trips').style.display = 'none';
         document.getElementById("profile").style.display = "none";
+        document.getElementById("triperror").style.display = "none";
+        document.getElementById("areyousure").style.display = "none";
         addzichtbaar = 0;
         document.getElementById("svgplus").style.fill = "white";
         document.getElementById("svghome").style.fill = "var(--gold-color)";
@@ -1646,6 +1797,9 @@ function getpopup(hvl){
     popupopen = 1;
 
     document.getElementById("fullpopupimg").src = imgg;
+    document.getElementById("fullpopupimg").onclick = function() {
+        fullscreenimg(imgg);
+    }
     document.getElementById("fullpopupimg").style.backgroundSize = "contain";
     document.getElementById("fullpopupimg").style.backgroundRepeat = "no-repeat";
 
@@ -1682,7 +1836,10 @@ function getpopup(hvl){
     }
 
     document.getElementById("fulloption2").onclick = function() {
-        deleteimage(hvl);
+        document.getElementById('areyousure').style.display = 'flex';
+        document.getElementById('sure').onclick = function() {
+            deleteimage(hvl);
+        }
     }
 
     document.getElementById('imgdata').scrollTop = 0;
@@ -1692,9 +1849,12 @@ function gallery(){
     document.getElementById("gallery").style.display = "flex";
     document.getElementById("trips").style.display = "none";
     document.getElementById("add").style.display = "none";
+    addzichtbaar = 0;
     document.getElementById("imagepopup").style.display = "none";
     document.getElementById("fullimagepopup").classList.remove("active");
     document.getElementById("profile").style.display = "none";
+    document.getElementById("triperror").style.display = "none";
+    document.getElementById("areyousure").style.display = "none";
 
     document.getElementById("svgplus").style.fill = "white";
     document.getElementById("svghome").style.fill = "white";
@@ -1707,9 +1867,12 @@ function trips(){
     document.getElementById("trips").style.display = "flex";
     document.getElementById("gallery").style.display = "none";
     document.getElementById("add").style.display = "none";
+    addzichtbaar = 0;
     document.getElementById("imagepopup").style.display = "none";
     document.getElementById("fullimagepopup").classList.remove("active");
     document.getElementById("profile").style.display = "none";
+    document.getElementById("triperror").style.display = "none";
+    document.getElementById("areyousure").style.display = "none";
 
     document.getElementById("svgplus").style.fill = "white";
     document.getElementById("svghome").style.fill = "white";
@@ -1724,6 +1887,7 @@ function getfullpopup(){
 
 function closefull(){
     document.getElementById("fullimagepopup").classList.remove("active");
+    document.getElementById("fullscreendiv").style.display = "none";
 }
 
 function viewonmap(hvl) {
@@ -1732,6 +1896,8 @@ function viewonmap(hvl) {
     document.getElementById("gallery").style.display = "none";
     document.getElementById("map").style.display = "flex";
     document.getElementById("profile").style.display = "none";
+    document.getElementById("triperror").style.display = "none";
+    document.getElementById("areyousure").style.display = "none";
 
     document.getElementById("svgplus").style.fill = "white";
     document.getElementById("svghome").style.fill = "var(--gold-color)";
@@ -1753,6 +1919,8 @@ function gettripimages(wtrip){
     document.getElementById("trips").style.display = "none";
     document.getElementById("map").style.display = "flex";
     document.getElementById("profile").style.display = "none";
+    document.getElementById("triperror").style.display = "none";
+    document.getElementById("areyousure").style.display = "none";
 
     document.getElementById("svgplus").style.fill = "white";
     document.getElementById("svghome").style.fill = "var(--gold-color)";
@@ -1829,10 +1997,20 @@ if(parseFloat(gesorteerd[i].trip) === wtrip){
     }
 
     document.getElementById("tripfulloption2").onclick = function() {
-        deletetrip(wtrip);
+        document.getElementById('areyousure').style.display = 'flex';
+        document.getElementById('sure').onclick = function() {
+            deletetrip(wtrip);
+        }
     }
     if(document.getElementById("tripscroll").innerHTML === ""){
-        alert("no images for this trip");
+        document.getElementById("triperror").style.display = "flex";
+        document.getElementById('suretrip').onclick = function() {
+            deletetrip(wtrip);
+        }
+        document.getElementById('edittrip').onclick = function() {
+            edittrip(wtrip);
+            document.getElementById("triperror").style.display = "none";
+        }
         document.getElementById("trips").style.display = "flex";
         document.getElementById('svgplane').style.fill = "var(--gold-color)";
         document.getElementById('svghome').style.fill = "white";
@@ -1930,6 +2108,8 @@ function closetrip() {
     document.getElementById("map").style.display = "flex";
     document.getElementById("navpill").style.display = "flex";
     document.getElementById("profile").style.display = "none";
+    document.getElementById("triperror").style.display = "none";
+    document.getElementById("areyousure").style.display = "none";
 
     document.getElementById("svgplus").style.fill = "white";
     document.getElementById("svghome").style.fill = "var(--gold-color)";
@@ -2050,6 +2230,9 @@ function closetripadd(){
 }
 
 function openaddtrip(){
+    document.getElementById("triptitelinput").value = "";
+    document.getElementById("tripdateinput").value = "";
+    document.getElementById("tripdateinput2").value = "";
     document.getElementById("addtrip").style.display = "flex";
 }
 
@@ -2073,13 +2256,11 @@ function opwelkegescrollt(){
 }
 
 async function deleteimage(hvl){
-    if (confirm("Remove image?")){
         loadedmarkers.splice(hvl, 1);
 
         await localforage.setItem('my_markers', loadedmarkers);
 
         location.reload();
-    }
 }
 
 function openprofile(){
@@ -2087,8 +2268,12 @@ function openprofile(){
     document.getElementById("fullimagepopup").classList.remove("active");
     document.getElementById("gallery").style.display = "none";
     document.getElementById("trips").style.display = "none";
+    document.getElementById("add").style.display = "none";
+    addzichtbaar = 0;
     document.getElementById("tripviewer").classList.remove("active");
     document.getElementById("navpill").style.display = "flex";
+    document.getElementById("triperror").style.display = "none";
+    document.getElementById("areyousure").style.display = "none";
 
     document.getElementById("svgplus").style.fill = "white";
     document.getElementById("svghome").style.fill = "white";
@@ -2170,6 +2355,9 @@ function galleryfullpopup(hvl){
     var imglocation = loadedmarkers[hvl].loca;
 
     document.getElementById("fullpopupimg").src = imgg;
+    document.getElementById("fullpopupimg").onclick = function() {
+        fullscreenimg(imgg);
+    }
     document.getElementById("fullpopupimg").style.backgroundSize = "contain";
     document.getElementById("fullpopupimg").style.backgroundRepeat = "no-repeat";
 
@@ -2257,13 +2445,11 @@ function edittrip(i) {
 }
 
 async function deletetrip(hvl){
-    if (confirm("Remove trip?")){
         loadedtrips.splice(hvl, 1);
 
         await localforage.setItem('my_trips', loadedtrips);
 
         location.reload();
-    }
 }
 
 async function getlocaname(fotolat,fotolong){
@@ -2323,6 +2509,16 @@ function loadcolor(){
 }
 
 loadcolor();
+
+function fullscreenimg(srcc){
+    console.log(srcc);
+    document.getElementById("fullscreendiv").style.display = "flex";
+    document.getElementById("fullscreenimg").src = srcc;
+}
+
+function closefullscreen(){
+    document.getElementById("fullscreendiv").style.display = "none";
+}
 
     </script>
 </body>
